@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hbd roll no 69</title>
+    <style>
+        body {
+            background-color: #ffeb3b;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+            overflow: hidden; 
+            position: relative;
+            height: 100vh; 
+        }
+        h1 {
+            font-size: 3em;
+            position: relative;
+            display: inline-block;
+        }
+        h1 span {
+            display: inline-block;
+            position: relative;
+            animation: fall 1.5s ease-in-out forwards;
+        }
+        h2 {
+            color: #4caf50;
+            font-size: 2em;
+            animation: slideIn 3s ease-out;
+        }
+        .image-container {
+            margin: 30px 0;
+        }
+        .image-container img {
+            width: 300px;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin: 10px;
+        }
+        .input-container {
+            margin-top: 20px;
+            position: relative;
+        }
+        .input-container input {
+            padding: 10px;
+            font-size: 1em;
+            width: 300px;
+            margin-right: 10px;
+            border: 2px solid #4caf50;
+            border-radius: 5px;
+        }
+        .input-container button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .messages-display {
+            margin-top: 30px;
+            font-size: 1.2em;
+            color: #e91e63;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        @keyframes slideIn {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h1 id="birthdayMessage">
+        <span>H</span><span>a</span><span>p</span><span>p</span><span>y</span>
+        <span> </span>
+        <span>B</span><span>i</span><span>r</span><span>t</span><span>h</span><span>d</span><span>a</span><span>y</span>
+        <span> </span>
+        <span>S</span><span>u</span><span>d</span><span>h</span><span>a</span><span>n</span><span>s</span><span>h</span><span>u</span><span>!</span>
+    </h1>
+    <h2>The Legend turns 24 today</h2>
+    <div class="image-container">
+        <img src="image1.jpg" alt="Sudhanshu's Funny Moment 1">
+        <img src="image2.jpg" alt="Sudhanshu's Funny Moment 2">
+        <img src="image3.jpg" alt="Sudhanshu's Funny Moment 3">
+    </div>
+    <div class="input-container">
+        <button id="addMessageButton" onclick="moveButtonRandomly()">Add Message</button>
+    </div>
+    <div class="messages-display" id="messagesDisplay">
+
+    </div>
+
+    <script>
+        function moveButtonRandomly() {
+            const button = document.getElementById('addMessageButton');
+            const inputContainer = document.querySelector('.input-container');
+            const containerRect = inputContainer.getBoundingClientRect();
+            const buttonRect = button.getBoundingClientRect();
+
+            const maxX = containerRect.width - buttonRect.width;
+            const maxY = containerRect.height - buttonRect.height;
+
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+
+            button.style.left = `${randomX}px`;
+            button.style.top = `${randomY}px`;
+        }
+
+        window.onload = function() {
+            const letters = document.querySelectorAll('#birthdayMessage span');
+            letters.forEach((letter, index) => {
+                letter.style.animationDelay = `${index * 0.5}s`;
+            });
+        };
+    </script>
+</body>
+</html>
