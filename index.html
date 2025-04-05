@@ -5,78 +5,48 @@
     <meta name="viewport" content="width=1024">
     <title>hbd roll no 69</title>
     <style>
-        body {
-            background-color: #ffeb3b;
-            color: #333;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            padding: 50px;
-            margin: 0;
-            position: relative;
-            height: 100vh; 
-        }
-        h1 {
-            font-size: 3em;
-            position: relative;
-            display: inline-block;
-        }
-        h1 span {
-            display: inline-block;
-            position: relative;
-            animation: fall 1.5s ease-in-out forwards;
-        }
-        h2 {
-            color: #4caf50;
-            font-size: 2em;
-            animation: slideIn 3s ease-out;
-        }
-        .image-container {
-            margin: 30px 0;
-        }
-        .image-container img {
-            width: 300px;
-            height: auto;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            margin: 10px;
-        }
-        .input-container {
-            margin-top: 20px;
-            position: relative;
-        }
-        .input-container input {
-            padding: 10px;
-            font-size: 1em;
-            width: 300px;
-            margin-right: 10px;
-            border: 2px solid #4caf50;
-            border-radius: 5px;
-        }
-        .input-container button {
-            padding: 10px 20px;
-            font-size: 1em;
-            background-color: #4caf50;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        .messages-display {
-            margin-top: 30px;
-            font-size: 1.2em;
-            color: #e91e63;
-        }
-        @keyframes fall {
-            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
-        @keyframes slideIn {
-            0% { transform: translateY(-50px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
+body {
+    background-color: #F8F1E5; /* Ivory */
+    color: #4A4A4A; /* Charcoal Gray */
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    padding: 50px;
+    margin: 0;
+}
+h1 {
+    font-size: 3em;
+    color: #8B5E3C; /* Mocha */
+}
+h2 {
+    color: #C2A878; /* Muted Gold */
+    font-size: 2em;
+}
+.input-container input {
+    background-color: #FFF5EE; /* Seashell */
+    border: 2px solid #C2A878; /* Muted Gold */
+    padding: 10px;
+    font-size: 1em;
+    width: 300px;
+    border-radius: 5px;
+}
+.input-container button {
+    background-color: #C2A878; /* Muted Gold */
+    color: #F8F1E5; /* Ivory */
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.input-container button:hover {
+    background-color: #A08C6E; /* Darker shade of Muted Gold */
+}
+.messages-display {
+    margin-top: 30px;
+    font-size: 1.2em;
+    color: #708090; /* Slate Gray */
+}
+
     </style>
 </head>
 <body>
@@ -94,7 +64,7 @@
         <img src="3.jpg" alt="Sudhanshu's Funny Moment 3">
     </div>
     <div class="input-container">
-        <button id="addMessageButton" onclick="moveButtonRandomly()">Add Message</button>
+        <button id="addMessageButton" onclick="moveButtonRandomly()">Click To Add A Message</button>
     </div>
     <div class="messages-display" id="messagesDisplay">
 
