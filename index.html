@@ -5,48 +5,75 @@
     <meta name="viewport" content="width=1024">
     <title>hbd roll no 69</title>
     <style>
-body {
-    background-color: #F8F1E5; /* Ivory */
-    color: #4A4A4A; /* Charcoal Gray */
-    font-family: 'Arial', sans-serif;
-    text-align: center;
-    padding: 50px;
-    margin: 0;
-}
-h1 {
-    font-size: 3em;
-    color: #8B5E3C; /* Mocha */
-}
-h2 {
-    color: #C2A878; /* Muted Gold */
-    font-size: 2em;
-}
-.input-container input {
-    background-color: #FFF5EE; /* Seashell */
-    border: 2px solid #C2A878; /* Muted Gold */
-    padding: 10px;
-    font-size: 1em;
-    width: 300px;
-    border-radius: 5px;
-}
-.input-container button {
-    background-color: #C2A878; /* Muted Gold */
-    color: #F8F1E5; /* Ivory */
-    border: none;
-    padding: 10px 20px;
-    font-size: 1em;
-    border-radius: 5px;
-    cursor: pointer;
-}
-.input-container button:hover {
-    background-color: #A08C6E; /* Darker shade of Muted Gold */
-}
-.messages-display {
-    margin-top: 30px;
-    font-size: 1.2em;
-    color: #708090; /* Slate Gray */
-}
-
+        body {
+            background-color: #F8F1E5;
+            color: #4A4A4A;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+        }
+        h1 {
+            font-size: 3em;
+            color: #8B5E3C;
+        }
+        h1 span {
+            display: inline-block;
+            position: relative;
+            opacity: 1;
+        }
+        .fall {
+            animation: fallApart 2s ease-in-out forwards;
+        }
+        @keyframes fallApart {
+            to {
+                transform: translateY(100vh) rotate(1024deg);
+                opacity: 0;
+            }
+        }
+        h2 {
+            color: #C2A878;
+            font-size: 2em;
+        }
+        .input-container input {
+            background-color: #FFF5EE;
+            border: 2px solid #C2A878;
+            padding: 10px;
+            font-size: 1em;
+            width: 300px;
+            border-radius: 5px;
+        }
+        .input-container button {
+            background-color: #C2A878;
+            color: #F8F1E5;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            position: fixed;
+        }
+        .input-container button:hover {
+            background-color: #A08C6E;
+        }
+        .messages-display {
+            margin-top: 30px;
+            font-size: 1.2em;
+            color: #708090;
+        }
+        .footer {
+            margin-top: 50px;
+            font-size: 1em;
+            color: #999;
+        }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        @keyframes slideIn {
+            0% { transform: translateY(-50px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -59,38 +86,70 @@ h2 {
     </h1>
     <h2>The Legend turns 24 today</h2>
     <div class="image-container">
-        <img src="3.jpg" alt="Sudhanshu's Funny Moment 3"  width="500" height="500">
+        <img style='border:3px solid #C2A878' src="3.jpg" alt="Sudhanshu's Funny Moment 3" width="400" height="400">
     </div>
     <div class="input-container">
-        <button id="addMessageButton" onclick="moveButtonRandomly()">Click To Add A Message</button>
+    
+        <button id="addMessageButton" onclick="handleButtonClick()">dd for a reason</button>
     </div>
-    <div class="messages-display" id="messagesDisplay">
-
-    </div>
+    <div class="messages-display" id="messagesDisplay"></div>
 
     <script>
-        function moveButtonRandomly() {
-            const button = document.getElementById('addMessageButton');
-            const inputContainer = document.querySelector('.input-container');
-            const containerRect = inputContainer.getBoundingClientRect();
-            const buttonRect = button.getBoundingClientRect();
+let clickCount = 0;
 
-            const maxX = containerRect.width - buttonRect.width;
-            const maxY = containerRect.height - buttonRect.height;
+function triggerFall() {
+    const letters = document.querySelectorAll('#birthdayMessage span');
+    letters.forEach((letter, index) => {
+        setTimeout(() => {
+            letter.classList.add('fall');
+        }, index * 100);
+    });
+}
 
-            const randomX = Math.random() * maxX;
-            const randomY = Math.random() * maxY;
+function loadMessages() {
+    const messages = JSON.parse(localStorage.getItem('messages')) || [];
+    const messagesDisplay = document.getElementById('messagesDisplay');
+    messagesDisplay.innerHTML = '';
+    messages.forEach(message => {
+        const messageElement = document.createElement('p');
+        messageElement.textContent = message;
+        messagesDisplay.appendChild(messageElement);
+    });
+}
 
-            button.style.left = `${randomX}px`;
-            button.style.top = `${randomY}px`;
-        }
+function addMessage() {
+    const userMessage = document.getElementById('userMessage').value;
+    if (userMessage.trim() !== '') {
+        const messages = JSON.parse(localStorage.getItem('messages')) || [];
+        messages.push(userMessage);
+        localStorage.setItem('messages', JSON.stringify(messages));
+        document.getElementById('userMessage').value = '';
+        loadMessages();
+    }
+}
 
-        window.onload = function() {
-            const letters = document.querySelectorAll('#birthdayMessage span');
-            letters.forEach((letter, index) => {
-                letter.style.animationDelay = `${index * 0.6}s`;
-            });
-        };
+function moveButtonRandomly() {
+    const button = document.getElementById('addMessageButton');
+    const padding = 20;
+    const maxX = window.innerWidth - button.offsetWidth - padding;
+    const maxY = window.innerHeight - button.offsetHeight - padding;
+    const randomX = Math.floor(Math.random() * maxX);
+    const randomY = Math.floor(Math.random() * maxY);
+
+    button.style.left = `${randomX}px`;
+    button.style.top = `${randomY}px`;
+}
+
+function handleButtonClick() {
+    clickCount++;
+    triggerFall();
+    moveButtonRandomly();
+    setTimeout(() => {
+        addMessage();
+    }, 1100);
+}
+
+document.addEventListener('DOMContentLoaded', loadMessages);
     </script>
 </body>
 </html>
