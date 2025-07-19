@@ -250,6 +250,9 @@
             font-size: 2em;
             position: fixed;
             top: -50px;
+            animation-name: gentleFall;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
             pointer-events: none;
             z-index: 1000;
         }
@@ -259,12 +262,14 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            animation: gentleFall 5s linear infinite;
+            animation-name: gentleFall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
         }
 
         @keyframes gentleFall {
-            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
 
         .love-note {
@@ -295,7 +300,9 @@
             font-size: 2em;
             pointer-events: none;
             z-index: 500;
-            animation: butterflyFlight 8s linear infinite;
+            animation-name: butterflyFlight;
+            animation-timing-function: linear;
+            animation-iteration-count: 1;
         }
 
         @keyframes butterflyFlight {
@@ -329,23 +336,23 @@
             </div>
             <div class="age-counter">26</div>
             <div class="love-note">
-     Fun fact, today is the 9,497th day from when you were born in 1999.🌸
+    Fun fact, today is the 9,497th day from when you were born in 1999.🌸
             </div>
         </div>
 
-       
+        
             <div class="love-note">
                 May your days be as beautiful as you are...
             </div>
             <button class="lovely-btn" onclick="makeFlowersRain()">
-               🌺 Bloom with Joy  (click me) 
+                🌺 Bloom with Joy  (click me) 
             </button>
         </div>
 
         <div class="birthday-wishes">
             <div class="birthday-cake">🎂</div>
             <h2 style="color: #9fafa0; font-size: 2.5em; margin-bottom: 20px; font-weight: 300;">
-               Remember 💕
+                Remember 💕
             </h2>
             <div class="heartfelt-message">
               
@@ -521,3 +528,4 @@
     </script>
 </body>
 </html>
+
