@@ -18,19 +18,28 @@
                 radial-gradient(circle at 20% 20%, rgba(245, 222, 179, 0.3) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(245, 222, 179, 0.3) 0%, transparent 50%),
                 radial-gradient(circle at 40% 40%, rgba(245, 222, 179, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 60% 60%, rgba(245, 222, 179, 0.2) 0%, transparent 50%),
-                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><g id="butterfly"><path d="M50 30 Q45 25 35 30 Q30 35 35 40 Q40 35 45 35 Q50 40 55 35 Q60 35 65 40 Q70 35 65 30 Q55 25 50 30 Z" fill="rgba(245,222,179,0.6)" stroke="rgba(245,222,179,0.8)" stroke-width="0.5"/><path d="M50 35 Q45 40 35 45 Q30 50 35 55 Q40 50 45 50 Q50 55 55 50 Q60 50 65 55 Q70 50 65 45 Q55 40 50 35 Z" fill="rgba(245,222,179,0.4)" stroke="rgba(245,222,179,0.6)" stroke-width="0.5"/><circle cx="50" cy="40" r="1" fill="rgba(245,222,179,0.9)"/></g></defs><use href="%23butterfly" x="0" y="0" opacity="0.7"/><use href="%23butterfly" x="60" y="30" opacity="0.5" transform="scale(0.8)"/><use href="%23butterfly" x="20" y="60" opacity="0.6" transform="scale(0.9)"/></svg>');
-            background-size: 200px 200px, 250px 250px, 180px 180px, 220px 220px, 120px 120px;
-            background-position: 0 0, 100px 100px, 50px 150px, 150px 50px, 0 0;
-            animation: butterflyFloat 20s ease-in-out infinite;
+                radial-gradient(circle at 60% 60%, rgba(245, 222, 179, 0.2) 0%, transparent 50%);
             min-height: 100vh;
             overflow-x: hidden;
         }
 
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><g id="butterfly"><path d="M50 30 Q45 25 35 30 Q30 35 35 40 Q40 35 45 35 Q50 40 55 35 Q60 35 65 40 Q70 35 65 30 Q55 25 50 30 Z" fill="rgba(245,222,179,0.6)" stroke="rgba(245,222,179,0.8)" stroke-width="0.5"/><path d="M50 35 Q45 40 35 45 Q30 50 35 55 Q40 50 45 50 Q50 55 55 50 Q60 50 65 55 Q70 50 65 45 Q55 40 50 35 Z" fill="rgba(245,222,179,0.4)" stroke="rgba(245,222,179,0.6)" stroke-width="0.5"/><circle cx="50" cy="40" r="1" fill="rgba(245,222,179,0.9)"/></g></defs><use href="%23butterfly" x="0" y="0" opacity="0.7"/><use href="%23butterfly" x="60" y="30" opacity="0.5" transform="scale(0.8)"/><use href="%23butterfly" x="20" y="60" opacity="0.6" transform="scale(0.9)"/></svg>');
+            background-size: 120px 120px;
+            animation: butterflyFloat 25s ease-in-out infinite;
+        }
+
         @keyframes butterflyFloat {
-            0% { background-position: 0 0, 100px 100px, 50px 150px, 150px 50px, 0 0; }
-            50% { background-position: 20px 20px, 120px 120px, 70px 170px, 170px 70px, 20px 20px; }
-            100% { background-position: 0 0, 100px 100px, 50px 150px, 150px 50px, 0 0; }
+            0% { background-position: 0 0, 100px 100px, 50px 150px, 150px 50px; }
+            50% { background-position: 20px 20px, 120px 120px, 70px 170px, 170px 70px; }
+            100% { background-position: 0 0, 100px 100px, 50px 150px, 150px 50px; }
         }
 
         .container {
@@ -93,23 +102,8 @@
             margin: 30px 0;
             box-shadow: 0 10px 25px rgba(159, 175, 160, 0.15);
             border: 2px solid rgba(212, 168, 168, 0.2);
-            transition: all 0.4s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
             position: relative;
-        }
-
-        .lovely-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"><path d="M30 15 Q25 10 15 15 Q10 20 15 25 Q20 20 25 20 Q30 25 35 20 Q40 20 45 25 Q50 20 45 15 Q35 10 30 15 Z" fill="rgba(245,222,179,0.3)" stroke="rgba(245,222,179,0.5)" stroke-width="0.3"/><path d="M30 20 Q25 25 15 30 Q10 35 15 40 Q20 35 25 35 Q30 40 35 35 Q40 35 45 40 Q50 35 45 30 Q35 25 30 20 Z" fill="rgba(245,222,179,0.2)" stroke="rgba(245,222,179,0.4)" stroke-width="0.3"/></svg>');
-            background-size: 80px 80px;
-            background-repeat: repeat;
-            opacity: 0.3;
-            border-radius: 20px;
-            pointer-events: none;
         }
 
         .lovely-section:hover {
@@ -150,21 +144,6 @@
             position: relative;
         }
 
-        .birthday-wishes::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 20 Q40 10 25 20 Q15 30 25 40 Q35 30 45 30 Q50 40 55 30 Q65 30 75 40 Q85 30 75 20 Q60 10 50 20 Z" fill="rgba(245,222,179,0.2)" stroke="rgba(245,222,179,0.4)" stroke-width="0.4"/><path d="M50 35 Q40 45 25 55 Q15 65 25 75 Q35 65 45 65 Q50 75 55 65 Q65 65 75 75 Q85 65 75 55 Q60 45 50 35 Z" fill="rgba(245,222,179,0.15)" stroke="rgba(245,222,179,0.3)" stroke-width="0.4"/><circle cx="50" cy="50" r="2" fill="rgba(245,222,179,0.6)"/></svg>');
-            background-size: 120px 120px;
-            background-repeat: repeat;
-            opacity: 0.2;
-            border-radius: 25px;
-            pointer-events: none;
-        }
-
         .birthday-cake {
             font-size: 4em;
             margin: 25px 0;
@@ -199,25 +178,26 @@
             z-index: 999;
         }
 
-        .emoji-rain {
-            font-size: 2em;
+        .particle {
             position: fixed;
             top: -50px;
             animation-name: gentleFall;
             animation-timing-function: linear;
             animation-iteration-count: 1;
             pointer-events: none;
+            will-change: transform, opacity;
+        }
+
+        .emoji-rain {
+            font-size: 2em;
             z-index: 1000;
         }
 
         .confetti-piece {
-            position: absolute;
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            animation-name: gentleFall;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
+            z-index: 999;
         }
 
         @keyframes gentleFall {
@@ -249,13 +229,9 @@
         }
 
         .floating-butterfly {
-            position: fixed;
             font-size: 2em;
-            pointer-events: none;
             z-index: 500;
             animation-name: butterflyFlight;
-            animation-timing-function: linear;
-            animation-iteration-count: 1;
         }
 
         @keyframes butterflyFlight {
@@ -265,7 +241,6 @@
             100% { transform: translateX(calc(100vw + 100px)) translateY(-20px) rotate(360deg); opacity: 0; }
         }
 
-        /* --- Special Message Popup --- */
         .special-message-popup {
             position: fixed;
             top: 50%;
@@ -299,76 +274,33 @@
             box-shadow: 0 4px 15px rgba(159, 175, 160, 0.3);
         }
 
-        /* --- Mobile Responsive Styles --- */
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            .birthday-header {
-                padding: 30px;
-            }
-            .birthday-header h1 {
-                font-size: 2.8em;
-            }
-            .sweet-message {
-                font-size: 1.2em;
-            }
-            .age-counter {
-                font-size: 4em;
-            }
-            .lovely-btn {
-                padding: 15px 30px;
-                font-size: 1.1em;
-            }
-            .birthday-wishes {
-                padding: 30px;
-                margin: 30px 0;
-            }
-            .birthday-wishes h2 {
-                font-size: 2.2em !important;
-            }
-            .heartfelt-message {
-                font-size: 1.1em;
-            }
-            .love-note {
-                font-size: 1em;
-                padding: 20px;
-            }
+            .container { padding: 20px; }
+            .birthday-header { padding: 30px; }
+            .birthday-header h1 { font-size: 2.8em; }
+            .sweet-message { font-size: 1.2em; }
+            .age-counter { font-size: 4em; }
+            .lovely-btn { padding: 15px 30px; font-size: 1.1em; }
+            .birthday-wishes { padding: 30px; margin: 30px 0; }
+            .birthday-wishes h2 { font-size: 2.2em !important; }
+            .heartfelt-message { font-size: 1.1em; }
+            .love-note { font-size: 1em; padding: 20px; }
         }
 
         @media (max-width: 480px) {
-            .container {
-                padding: 15px;
-            }
-            .birthday-header {
-                padding: 20px;
-                margin-bottom: 20px;
-            }
-            .birthday-header h1 {
-                font-size: 2.2em;
-                letter-spacing: 1px;
-            }
-            .sweet-message {
-                font-size: 1.1em;
-            }
-            .age-counter {
-                font-size: 3.5em;
-            }
-            .birthday-wishes h2 {
-                font-size: 2em !important;
-            }
-            .lovely-btn {
-                padding: 12px 25px;
-                font-size: 1em;
-            }
-            .special-message-popup {
-                padding: 25px;
-                font-size: 1.1em;
-            }
+            .container { padding: 15px; }
+            .birthday-header { padding: 20px; margin-bottom: 20px; }
+            .birthday-header h1 { font-size: 2.2em; letter-spacing: 1px; }
+            .sweet-message { font-size: 1.1em; }
+            .age-counter { font-size: 3.5em; }
+            .birthday-wishes h2 { font-size: 2em !important; }
+            .lovely-btn { padding: 12px 25px; font-size: 1em; }
+            .special-message-popup { padding: 25px; font-size: 1.1em; }
         }
     </style>
 </head>
 <body>
+    <div class="background-overlay"></div>
     <div class="confetti" id="confetti"></div>
     
     <div class="container">
@@ -414,34 +346,39 @@
     </div>
 
     <script>
+        function createParticle(type, content, duration) {
+            const particle = document.createElement('div');
+            particle.className = `particle ${type}`;
+            particle.innerHTML = content;
+            particle.style.left = `${Math.random() * 100}%`;
+            particle.style.animationDuration = `${duration}s`;
+            particle.style.animationDelay = `${Math.random() * 2}s`;
+            document.body.appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, duration * 1000);
+        }
+
         function makeFlowersRain() {
             const flowers = ['🌸', '🌺', '🌻', '🌷', '🌹', '💐', '🌼', '🦋', '🌿'];
-            
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < 20; i++) {
                 setTimeout(() => {
-                    const flower = document.createElement('div');
-                    flower.className = 'emoji-rain';
-                    flower.textContent = flowers[Math.floor(Math.random() * flowers.length)];
-                    flower.style.left = Math.random() * 100 + '%';
-                    flower.style.animationDelay = Math.random() * 2 + 's';
-                    flower.style.animationDuration = (Math.random() * 4 + 3) + 's';
-                    document.body.appendChild(flower);
-                    
-                    setTimeout(() => {
-                        flower.remove();
-                    }, 7000);
-                }, i * 150);
+                    const flowerContent = flowers[Math.floor(Math.random() * flowers.length)];
+                    const duration = Math.random() * 4 + 4;
+                    createParticle('emoji-rain', flowerContent, duration);
+                }, i * 200);
             }
         }
 
         function showLoveMessage() {
-            createGentleConfetti();
-            createButterflies();
+            createGentleConfetti(30);
+            createButterflies(3);
             
             setTimeout(() => {
                 const messages = [
                     "🦋 You are a rare and beautiful soul 💕",
-                    "🌸 Your kindness blooms in the hearts of everyone you meet. Happy 26th, beautiful! 🌺",
+                    "🌸 Your kindness blooms in the hearts of everyone you meet. Happy 26th, beautiful! �",
                     "🌻 Like a butterfly brings joy to every garden, you brighten every life you touch! 🦋",
                     "🌷 The world is more beautiful because you're in it! 🌍"
                 ];
@@ -472,80 +409,47 @@
             }, 500);
         }
 
-        function createGentleConfetti() {
+        function createGentleConfetti(count) {
             const colors = ['#9fafa0', '#d4a8a8', '#f8f5f3', '#f5deb3', '#fceaea'];
-            
-            for (let i = 0; i < 30; i++) {
+            const confettiContainer = document.getElementById('confetti');
+            for (let i = 0; i < count; i++) {
                 setTimeout(() => {
                     const confetti = document.createElement('div');
-                    confetti.className = 'confetti-piece';
-                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.className = 'particle confetti-piece';
+                    confetti.style.left = `${Math.random() * 100}%`;
                     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.animationDelay = Math.random() * 2 + 's';
-                    confetti.style.animationDuration = (Math.random() * 4 + 3) + 's';
-                    document.getElementById('confetti').appendChild(confetti);
+                    const duration = Math.random() * 5 + 5;
+                    confetti.style.animationDuration = `${duration}s`;
+                    confetti.style.animationDelay = `${Math.random() * 2}s`;
+                    confettiContainer.appendChild(confetti);
                     
                     setTimeout(() => {
                         confetti.remove();
-                    }, 7000);
-                }, i * 100);
+                    }, duration * 1000);
+                }, i * 150);
             }
         }
 
-        function createButterflies() {
-            const butterflies = ['🦋', '🦋', '🦋'];
-            
-            for (let i = 0; i < 3; i++) {
+        function createButterflies(count) {
+            for (let i = 0; i < count; i++) {
                 setTimeout(() => {
-                    const butterfly = document.createElement('div');
-                    butterfly.className = 'floating-butterfly';
-                    butterfly.textContent = butterflies[Math.floor(Math.random() * butterflies.length)];
-                    butterfly.style.top = Math.random() * 70 + 15 + '%';
-                    butterfly.style.left = '-100px';
-                    butterfly.style.animationDelay = Math.random() * 2 + 's';
-                    butterfly.style.animationDuration = (Math.random() * 4 + 6) + 's';
-                    document.body.appendChild(butterfly);
-                    
-                    setTimeout(() => {
-                        butterfly.remove();
-                    }, 10000);
-                }, i * 2000);
+                    const duration = Math.random() * 6 + 8;
+                    const butterfly = createParticle('floating-butterfly', '🦋', duration);
+                    if (butterfly) {
+                         butterfly.style.top = `${Math.random() * 70 + 15}%`;
+                    }
+                }, i * 2500);
             }
         }
 
-        // Auto-start gentle flower rain
-        setTimeout(() => {
-            makeFlowersRain();
-        }, 3000);
+        // Auto-start effects
+        setTimeout(makeFlowersRain, 2000);
+        setTimeout(() => createButterflies(2), 4000);
+        
+        // Reduced frequency for background confetti and butterflies
+        setInterval(() => createGentleConfetti(5), 15000);
+        setInterval(() => createButterflies(1), 20000);
 
-        // Auto-start butterflies
-        setTimeout(() => {
-            createButterflies();
-        }, 5000);
-
-        // Continuous gentle confetti
-        setInterval(() => {
-            for (let i = 0; i < 2; i++) {
-                setTimeout(() => {
-                    const confetti = document.createElement('div');
-                    confetti.className = 'confetti-piece';
-                    confetti.style.left = Math.random() * 100 + '%';
-                    confetti.style.backgroundColor = '#f5deb3';
-                    confetti.style.animationDuration = '6s';
-                    confetti.style.opacity = '0.6';
-                    document.getElementById('confetti').appendChild(confetti);
-                    
-                    setTimeout(() => {
-                        confetti.remove();
-                    }, 6000);
-                }, i * 3000);
-            }
-        }, 12000);
-
-        // Periodic butterfly flights
-        setInterval(() => {
-            createButterflies();
-        }, 15000);
     </script>
 </body>
 </html>
