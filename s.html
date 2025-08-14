@@ -4,15 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy 26th Birthday 🦋</title>
+    <meta name="theme-color" content="#f8f5f3">
+        <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Nunito:wght@400;700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Georgia', serif;
+            font-family: 'Quicksand', 'Nunito', 'Comfortaa', Arial, sans-serif;
             background: #f8f5f3;
             background-image: 
                 radial-gradient(circle at 20% 20%, rgba(245, 222, 179, 0.3) 0%, transparent 50%),
@@ -21,6 +24,8 @@
                 radial-gradient(circle at 60% 60%, rgba(245, 222, 179, 0.2) 0%, transparent 50%);
             min-height: 100vh;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         .background-overlay {
@@ -47,6 +52,8 @@
             margin: 0 auto;
             padding: 30px;
             text-align: center;
+            width: 100%;
+                font-family: 'Quicksand', 'Nunito', 'Comfortaa', Arial, sans-serif;
         }
 
         .birthday-header {
@@ -71,6 +78,7 @@
             font-weight: 400;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
             letter-spacing: 2px;
+            font-family: 'Georgia', serif;
         }
 
         .sweet-message {
@@ -113,7 +121,7 @@
 
         .lovely-btn {
             background: linear-gradient(135deg, #9fafa0 0%, #d4a8a8 100%);
-            color: white;
+            color: #fff;
             border: none;
             padding: 18px 35px;
             font-size: 1.2em;
@@ -122,10 +130,16 @@
             margin: 15px;
             transition: all 0.3s ease;
             box-shadow: 0 6px 20px rgba(159, 175, 160, 0.3);
-            font-family: 'Georgia', serif;
+                font-family: 'Quicksand', 'Nunito', 'Comfortaa', Arial, sans-serif;
             font-weight: 400;
             position: relative;
             z-index: 1;
+            outline: none;
+        }
+
+        .lovely-btn:focus {
+            outline: 2px solid #d4a8a8;
+            outline-offset: 2px;
         }
 
         .lovely-btn:hover {
@@ -257,7 +271,7 @@
             color: #9fafa0;
             z-index: 10000;
             box-shadow: 0 15px 50px rgba(159, 175, 160, 0.3);
-            font-family: Georgia, serif;
+                font-family: 'Quicksand', 'Nunito', 'Comfortaa', Arial, sans-serif;
             line-height: 1.6;
         }
 
@@ -269,83 +283,79 @@
             border-radius: 20px;
             cursor: pointer;
             font-size: 1em;
-            font-family: Georgia, serif;
+                font-family: 'Quicksand', 'Nunito', 'Comfortaa', Arial, sans-serif;
             margin-top: 15px;
             box-shadow: 0 4px 15px rgba(159, 175, 160, 0.3);
         }
 
         @media (max-width: 768px) {
-            .container { padding: 20px; }
-            .birthday-header { padding: 30px; }
-            .birthday-header h1 { font-size: 2.8em; }
-            .sweet-message { font-size: 1.2em; }
-            .age-counter { font-size: 4em; }
-            .lovely-btn { padding: 15px 30px; font-size: 1.1em; }
-            .birthday-wishes { padding: 30px; margin: 30px 0; }
-            .birthday-wishes h2 { font-size: 2.2em !important; }
-            .heartfelt-message { font-size: 1.1em; }
-            .love-note { font-size: 1em; padding: 20px; }
+            .container { padding: 10px; }
+            .birthday-header { padding: 18px; margin-bottom: 18px; }
+            .birthday-header h1 { font-size: 2em; letter-spacing: 1px; }
+            .sweet-message { font-size: 1em; }
+            .age-counter { font-size: 2.5em; }
+            .lovely-btn { padding: 12px 18px; font-size: 1em; min-width: 120px; }
+            .birthday-wishes { padding: 18px; margin: 18px 0; }
+            .birthday-wishes h2 { font-size: 1.5em !important; }
+            .heartfelt-message { font-size: 1em; }
+            .love-note { font-size: 0.95em; padding: 12px; }
+            .special-message-popup { padding: 12px; font-size: 1em; }
+            .background-overlay { background-size: 80px 80px; }
         }
 
         @media (max-width: 480px) {
-            .container { padding: 15px; }
-            .birthday-header { padding: 20px; margin-bottom: 20px; }
-            .birthday-header h1 { font-size: 2.2em; letter-spacing: 1px; }
-            .sweet-message { font-size: 1.1em; }
-            .age-counter { font-size: 3.5em; }
-            .birthday-wishes h2 { font-size: 2em !important; }
-            .lovely-btn { padding: 12px 25px; font-size: 1em; }
-            .special-message-popup { padding: 25px; font-size: 1.1em; }
+            .container { padding: 5px; }
+            .birthday-header { padding: 10px; margin-bottom: 10px; }
+            .birthday-header h1 { font-size: 1.3em; letter-spacing: 0.5px; }
+            .sweet-message { font-size: 0.9em; }
+            .age-counter { font-size: 2em; }
+            .birthday-wishes h2 { font-size: 1.2em !important; }
+            .lovely-btn { padding: 8px 12px; font-size: 0.95em; min-width: 100px; }
+            .special-message-popup { padding: 8px; font-size: 0.95em; }
+            .background-overlay { background-size: 50px 50px; }
         }
     </style>
 </head>
 <body>
-    <div class="background-overlay"></div>
-    <div class="confetti" id="confetti"></div>
-    
-    <div class="container">
-        <div class="birthday-header">
-            <h1>🦋 Happy Birthday, Dumdum 🦋</h1>
+    <div class="background-overlay" aria-hidden="true"></div>
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+    <main class="container">
+        <section class="birthday-header" aria-label="Birthday Header">
+            <h1 tabindex="0">🦋Happy 26th, beautiful!</h1>
             <div class="sweet-message">
-                Can't believe you are
+            
             </div>
-            <div class="age-counter">26</div>
-            <div class="love-note">
-                Fun fact, today is the 9,497th day from when you were born in 1999.🌸
-            </div>
-        </div>
+            <div class="age-counter" aria-live="polite"></div>
+          
+        </section>
 
-        <div class="lovely-section">
+        <section class="lovely-section" aria-label="Joy Section">
             <div class="love-note">
-                May your days be as beautiful as you are...
+               Dumdum, may your days be as wholesome as you are..
             </div>
-            <button class="lovely-btn" onclick="makeFlowersRain()">
-                🌺 Bloom with Joy (click me) 
+            <button class="lovely-btn" onclick="makeFlowersRain()" aria-label="Bloom with Joy">
+                💕 Click this button 
             </button>
-        </div>
+        </section>
         
-        <div class="birthday-wishes">
-            <div class="birthday-cake">🎂</div>
-            <h2 style="color: #9fafa0; font-size: 2.5em; margin-bottom: 20px; font-weight: 300;">
-                Remember 💕
-            </h2>
-            <div class="heartfelt-message">
-              
-            </div>
-            <div class="love-note">
-                  How grateful we all are to have you in our life.
-            </div>
-            <button class="lovely-btn" onclick="showLoveMessage()" style="font-size: 1.4em; margin-top: 25px;">
-                💕 A Special Message for You
+        <section class="birthday-wishes" aria-label="Birthday Wishes">
+            <div class="birthday-cake" aria-hidden="true"></div>
+            <button class="lovely-btn" onclick="showLoveMessage()" style="font-size: 1.2em; margin-top: 18px;" aria-label="Special Message">
+                🌸 You have received a Message
             </button>
             <div class="signature">
                 Hugs,<br>
                 Anuj 🦋
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script>
+
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
         function createParticle(type, content, duration) {
             const particle = document.createElement('div');
             particle.className = `particle ${type}`;
@@ -354,53 +364,47 @@
             particle.style.animationDuration = `${duration}s`;
             particle.style.animationDelay = `${Math.random() * 2}s`;
             document.body.appendChild(particle);
-            
             setTimeout(() => {
                 particle.remove();
             }, duration * 1000);
+            return particle;
         }
 
         function makeFlowersRain() {
             const flowers = ['🌸', '🌺', '🌻', '🌷', '🌹', '💐', '🌼', '🦋', '🌿'];
-            for (let i = 0; i < 20; i++) {
+            const count = isMobile() ? 10 : 20;
+            for (let i = 0; i < count; i++) {
                 setTimeout(() => {
                     const flowerContent = flowers[Math.floor(Math.random() * flowers.length)];
-                    const duration = Math.random() * 4 + 4;
+                    const duration = Math.random() * 3 + (isMobile() ? 3 : 4);
                     createParticle('emoji-rain', flowerContent, duration);
                 }, i * 200);
             }
         }
 
         function showLoveMessage() {
-            createGentleConfetti(30);
-            createButterflies(3);
-            
+            createGentleConfetti(isMobile() ? 15 : 30);
+            createButterflies(isMobile() ? 2 : 3);
             setTimeout(() => {
                 const messages = [
-                    "🦋 You are a rare and beautiful soul 💕",
-                    "🌸 Your kindness blooms in the hearts of everyone you meet. Happy 26th, beautiful! �",
-                    "🌻 Like a butterfly brings joy to every garden, you brighten every life you touch! 🦋",
-                    "🌷 The world is more beautiful because you're in it! 🌍"
+                    "🦋 Hi!!! Sheetal. You are such a rare and beautiful soul. You brighten everyone's day! and um, The world feels like a better place because you're in it 💕 OMGGG",
+                  
                 ];
-                
                 const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-
                 const existingPopup = document.querySelector('.special-message-popup');
                 if (existingPopup) {
                     existingPopup.remove();
                 }
-                
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'special-message-popup';
-                
+                messageDiv.setAttribute('role', 'dialog');
+                messageDiv.setAttribute('aria-modal', 'true');
                 messageDiv.innerHTML = `
                     ${randomMessage}
                     <br><br>
-                    <button onclick="this.parentElement.remove()">💕 Stop! don't make me smile so much!</button>
+                    <button onclick="this.parentElement.remove()" aria-label="Close popup">💕 Yes I'm smiling!</button>
                 `;
-                
                 document.body.appendChild(messageDiv);
-                
                 setTimeout(() => {
                     if (messageDiv.parentElement) {
                         messageDiv.remove();
@@ -418,11 +422,10 @@
                     confetti.className = 'particle confetti-piece';
                     confetti.style.left = `${Math.random() * 100}%`;
                     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    const duration = Math.random() * 5 + 5;
+                    const duration = Math.random() * 4 + (isMobile() ? 3 : 5);
                     confetti.style.animationDuration = `${duration}s`;
                     confetti.style.animationDelay = `${Math.random() * 2}s`;
                     confettiContainer.appendChild(confetti);
-                    
                     setTimeout(() => {
                         confetti.remove();
                     }, duration * 1000);
@@ -433,7 +436,7 @@
         function createButterflies(count) {
             for (let i = 0; i < count; i++) {
                 setTimeout(() => {
-                    const duration = Math.random() * 6 + 8;
+                    const duration = Math.random() * 4 + (isMobile() ? 6 : 8);
                     const butterfly = createParticle('floating-butterfly', '🦋', duration);
                     if (butterfly) {
                          butterfly.style.top = `${Math.random() * 70 + 15}%`;
@@ -442,14 +445,14 @@
             }
         }
 
-        // Auto-start effects
-        setTimeout(makeFlowersRain, 2000);
-        setTimeout(() => createButterflies(2), 4000);
-        
-        // Reduced frequency for background confetti and butterflies
-        setInterval(() => createGentleConfetti(5), 15000);
+
+        setTimeout(makeFlowersRain, 1500);
+        setTimeout(() => createButterflies(isMobile() ? 1 : 2), 3000);
+       
+        setInterval(() => createGentleConfetti(isMobile() ? 2 : 5), 15000);
         setInterval(() => createButterflies(1), 20000);
 
     </script>
 </body>
 </html>
+ 
