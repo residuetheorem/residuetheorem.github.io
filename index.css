@@ -425,47 +425,6 @@ span.parallax-el {
     width: 500px;
 }
 
-/* --- Photo Collage --- */
-#collage-section {
-    justify-content: center;
-    align-items: center;
-}
-
-#photo-collage-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: clamp(1rem, 4vw, 2rem);
-    width: 100%;
-    max-width: 800px;
-    margin-top: 2rem;
-    padding: 1rem;
-}
-
-.polaroid-container {
-    background-color: #fff;
-    padding: 8px 8px 16px 8px; /* Classic polaroid bottom border */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1), 0 8px 20px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
-    will-change: transform; /* Performance hint */
-    cursor: pointer;
-    position: relative; /* For z-index to work on hover */
-}
-
-.polaroid-container:hover {
-    transform: scale(1.08) rotate(0deg) !important; /* Straighten on hover */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2), 0 15px 35px rgba(0,0,0,0.15);
-    z-index: 10;
-}
-
-.polaroid-container img {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: cover;
-    aspect-ratio: 1 / 1;
-}
-
-
 /* --- Dynamic Backgrounds --- */
 #background-elements {
     position: fixed;
@@ -556,10 +515,6 @@ body.theme-night .night-sky { opacity: 1; }
     #story-mode-indicator-down span {
         display: inline; /* Show text on larger screens */
     }
-
-    #photo-collage-container {
-        grid-template-columns: repeat(3, 1fr);
-   }
 }
 
 @media (max-width: 768px) {

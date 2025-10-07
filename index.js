@@ -1,5 +1,6 @@
 
 
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -34,7 +35,6 @@ const DOM = {
     bouquetSection: document.getElementById('bouquet-section'),
     themeSwitcher: document.getElementById('theme-switcher'),
     backgroundElements: document.getElementById('background-elements'),
-    collageContainer: document.getElementById('photo-collage-container'),
     sections: [],
 };
 
@@ -598,7 +598,6 @@ const experience = {
         this.adjustSectionHeights(); // Set initial heights
         this.setupBackgrounds();
         flowerBouquet.init();
-        this.setupPhotoCollage();
         this.setupTextAnimations();
         this.setupScrolling();
         this.setupSpecialEffects();
@@ -674,39 +673,6 @@ const experience = {
             nightSky.appendChild(star);
         }
         DOM.backgroundElements.appendChild(nightSky);
-    },
-
-    setupPhotoCollage() {
-        if (!DOM.collageContainer) return;
-
-        const imageUrls = [
-            'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=500&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=500&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1554151228-14d9def656e4?q=80&w=500&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=500&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=500&auto=format&fit=crop',
-            'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=500&auto=format&fit=crop'
-        ];
-
-        // Clear container and create photos
-        DOM.collageContainer.innerHTML = '';
-        imageUrls.forEach(url => {
-            const container = document.createElement('div');
-            container.className = 'polaroid-container';
-
-            const img = document.createElement('img');
-            img.src = url;
-            img.alt = 'A cherished memory';
-            img.loading = 'lazy'; // Improve performance
-
-            container.appendChild(img);
-            DOM.collageContainer.appendChild(container);
-
-            // Set a unique, random rotation for each polaroid
-            gsap.set(container, {
-                rotation: Math.random() * 20 - 10 // Random rotation between -10 and 10 degrees
-            });
-        });
     },
 
     setupTextAnimations() {
@@ -787,28 +753,6 @@ const experience = {
                     }
                 },
                 onLeaveBack: () => flowerBouquet.stopSwayingAnimation(),
-            });
-        }
-        
-        const polaroids = gsap.utils.toArray('.polaroid-container');
-        if (polaroids.length > 0) {
-            gsap.set(polaroids, { autoAlpha: 0, scale: 0.8, y: '30%' });
-    
-            ScrollTrigger.create({
-                trigger: DOM.collageContainer,
-                scroller: DOM.viewport,
-                start: 'top 80%',
-                once: true,
-                onEnter: () => {
-                    gsap.to(polaroids, {
-                        autoAlpha: 1,
-                        scale: 1,
-                        y: '0%',
-                        duration: 1.2,
-                        stagger: 0.15,
-                        ease: 'expo.out'
-                    });
-                }
             });
         }
         
