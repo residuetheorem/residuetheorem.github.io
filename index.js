@@ -164,6 +164,7 @@ const flowerBouquet = {
     },
 
     generate() {
+        const wasAnimated = this.hasAnimated;
         this.flowers = [];
         this.stems = [];
         this.leaves = [];
@@ -181,14 +182,14 @@ const flowerBouquet = {
             const controlY = origin.y - this.height * 0.5;
             this.stems.push({
                 p0: origin, p1: { x: controlX, y: controlY }, p2: { x: endX, y: endY },
-                progress: 0
+                progress: wasAnimated ? 1 : 0
             });
 
             // A single leaf per stem for a cleaner look
             const t = 0.4 + Math.random() * 0.3;
             this.leaves.push({
                 stemIndex: i, t, side: Math.random() > 0.5 ? 1 : -1,
-                progress: 0
+                progress: wasAnimated ? 1 : 0
             });
 
             // Flower radius is proportionate to stem length, but small overall
@@ -197,7 +198,7 @@ const flowerBouquet = {
                 x: endX, y: endY, radius: flowerRadius,
                 colorIndex: i % 3,
                 zIndex: endY,
-                progress: 0,
+                progress: wasAnimated ? 1 : 0,
                 animationOffset: Math.random() * Math.PI * 2, // For unique petal sway
                 petalShape: Math.floor(Math.random() * 3) // 0: Classic, 1: Pointed, 2: Heart
             });
