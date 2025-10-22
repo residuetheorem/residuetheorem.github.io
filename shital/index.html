@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheetal 🦋</title>
+    <meta name="theme-color" content="#b5828c">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Playfair+Display:wght@700&family=Comfortaa:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="preload" href="https://files.catbox.moe/fqftdl.mp4" as="video" type="video/mp4">
+    <link rel="preload" href="https://files.catbox.moe/cjowme.mp3" as="audio" type="audio/mpeg">
+    <link rel="preload" href="https://files.catbox.moe/r3ysou.mp3" as="audio" type="audio/mpeg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.0.4/Tone.js"></script>
+</head>
+<body class="theme-day">
+    <div id="background-elements" aria-hidden="true"></div>
+
+    <div id="theme-switcher-container">
+        <button id="theme-switcher" aria-label="Change theme" type="button">
+            <svg class="theme-icon" id="sun-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <svg class="theme-icon" id="moon-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+    </div>
+
+    <div id="start-overlay">
+        <button id="start-button">
+            <div class="start-button-icon">🦋</div>
+            <span class="start-button-text">Tap to begin</span>
+        </button>
+    </div>
+
+    <div class="particle-container" id="particle-container" aria-hidden="true"></div>
+    
+    <main id="viewport">
+        <section class="content-section">
+             <div class="content-wrapper">
+                <h1 tabindex="0">Happyy birthdayyyy Sheetal! <span class="parallax-el">🦋</span></h1>
+                <div class="sweet-message"><div class="line"><span>Even</span> <span>you</span> <span>can't</span> <span>believe</span> <span>you</span> <span>are</span></div></div>
+                <div class="age">26</div>
+                <div class="sweet-message after-age"><div class="line"><span>right?</span> <span>AAAAAAAAAAA</span></div></div>
+             </div>
+        </section>
+
+        <section class="content-section" id="bouquet-section">
+            <canvas id="bouquet-canvas" aria-hidden="true"></canvas>
+        </section>
+
+        <section class="content-section" id="dumdum-section">
+            <div class="content-wrapper">
+                <div class="love-note">
+                    <div class="line"><span>Dumdum,</span> <span>may</span> <span>your</span> <span>days</span> <span>be</span> <span>as</span></div>
+                    <div class="line"><span>wholesome</span> <span>as</span> <span>you</span> <span>are..</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section" id="cake-section">
+            <div class="content-wrapper">
+                <div id="cake-container" aria-label="An animated character celebrating a birthday.">
+                    <video id="cake-video" src="https://files.catbox.moe/fqftdl.mp4" autoplay loop muted playsinline>
+                        A cute animated character celebrating a birthday with a cake.
+                    </video>
+                </div>
+                <div class="love-note">
+                     <div class="line"><span>🦋</span> <span>By</span> <span>the</span> <span>way,</span> <span>no</span> <span>matter</span> <span>how</span> <span>many</span></div>
+                     <div class="line"><span>birthdays</span> <span>go</span> <span>by,</span> <span>I’ll</span> <span>never</span> <span>catch</span> <span>up</span></div>
+                     <div class="line"><span>to</span> <span>you.</span> <span>Enjoy</span> <span>your</span> <span>day!</span> <span>best</span> <span>wishes.</span></div>
+                     <div class="line"><span class="no-italic">(✿◠‿◠)</span></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="content-wrapper">
+                <div class="signature">Hugs, Anuj <span class="parallax-el">🦋</span></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="story-navigation" class="hidden">
+        <button id="story-mode-indicator-up" class="story-nav-button" aria-label="Previous Section" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+        </button>
+        <button id="story-mode-indicator-down" class="story-nav-button" aria-label="Next Section" type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+            <span>Continue</span>
+        </button>
+    </div>
+
+    <script type="module" src="index.js"></script>
+</body>
+</html>

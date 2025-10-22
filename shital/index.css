@@ -1,0 +1,539 @@
+:root {
+    --bg-color: #f5f1e8;      /* Creamy background */
+    --text-dark: #4a3f35;     /* Earthy brown for text */
+    --accent1: #e5989b;      /* Soft coral rose */
+    --accent2: #6b705c;      /* Olive green */
+    --text-light: #fff;
+    /* Bouquet Day Colors */
+    --petal-color1: #e5989b;
+    --petal-color2: #fff;
+    --petal-color3: #fce3e4;
+    --stem-color: #6b705c;
+    --leaf-color: #8f9481;
+}
+
+body.theme-night {
+    --bg-color: #0d1b2a;      /* Deep navy, starry night */
+    --text-dark: #e0e1dd;     /* Soft silver for text */
+    --accent1: #a2d2ff;      /* Moonlight blue accent */
+    --accent2: #bca07e;      /* Muted gold, warm accent */
+    --text-light: #e0e1dd;    /* Consistent light text */
+    /* Bouquet Night Colors */
+    --petal-color1: #a2d2ff;
+    --petal-color2: #e0e1dd;
+    --petal-color3: #bca07e;
+    --stem-color: #e0e1dd; /* Soft silver stems, visible in moonlight */
+    --leaf-color: #bca07e; /* Muted gold leaves, visible in moonlight */
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    background-color: transparent;
+}
+
+body {
+    font-family: 'Quicksand', 'Comfortaa', Arial, sans-serif;
+    overflow: hidden; /* Prevent body from scrolling */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: var(--text-dark);
+    background-color: var(--bg-color);
+    text-align: center;
+    cursor: default;
+    position: relative; 
+    z-index: 0;
+    transition: background-color 2s ease-in-out, color 2s ease-in-out 0.5s;
+}
+
+main#viewport {
+    height: 100dvh; /* Use dynamic viewport height to prevent mobile layout shifts */
+    width: 100vw;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* For momentum scrolling on mobile */
+    position: relative;
+    z-index: 1; /* Ensure content is above the background elements */
+}
+
+/* --- Theme Switcher --- */
+#theme-switcher-container {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10001;
+}
+
+#theme-switcher {
+    background-color: rgba(74, 63, 53, 0.2);
+    backdrop-filter: blur(5px);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: var(--text-dark);
+    transition: background-color 0.3s, transform 0.3s, color 2s ease-in-out;
+}
+
+#theme-switcher:hover {
+    background-color: rgba(74, 63, 53, 0.4);
+    transform: scale(1.1);
+}
+
+#theme-switcher .theme-icon {
+    position: absolute;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+#theme-switcher:hover .theme-icon {
+    transform: rotate(45deg) scale(1.1);
+}
+
+#moon-icon {
+    opacity: 0;
+}
+
+body.theme-night #sun-icon {
+    opacity: 0;
+}
+
+body.theme-night #moon-icon {
+    opacity: 1;
+}
+
+
+/* --- Start Overlay --- */
+#start-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(74, 63, 53, 0.8); /* Earthy brown overlay */
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10002;
+    transition: opacity 0.7s ease-out;
+}
+
+#start-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#start-button {
+    background: none;
+    border: none;
+    color: var(--text-light);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s;
+}
+
+#start-button:hover {
+    transform: scale(1.05);
+}
+
+.start-button-icon {
+    font-size: 5rem;
+    animation: pulse 2.5s infinite;
+    margin-bottom: 1rem;
+}
+
+.start-button-text {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+
+.content-section {
+    min-height: 100dvh; /* Use dynamic viewport height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1.25rem, 5vw, 2.5rem); /* Fluid padding */
+    width: 100%;
+    position: relative;
+    overflow: hidden; /* Prevent parallax elements from overflowing */
+    /* background-color has been removed to allow the fixed background scene to show through */
+    transform: translateZ(0); /* Promotes section to own GPU layer for performance */
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw + 1rem, 3.5rem); /* Fluid typography */
+    color: var(--text-dark);
+    margin-bottom: 15px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: color 2s ease-in-out 0.5s;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5); /* Guarantees legibility */
+}
+
+.sweet-message {
+    font-size: clamp(1rem, 2vw + 0.5rem, 1.4rem); /* Fluid typography */
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    line-height: 1.6;
+    transition: color 2s ease-in-out 0.5s;
+}
+
+.sweet-message.after-age {
+    margin-top: 10px;
+}
+
+.age {
+    font-size: clamp(4rem, 10vw + 1rem, 6rem); /* Fluid typography */
+    font-weight: 700;
+    color: var(--accent1);
+    text-shadow: 3px 3px 10px rgba(0,0,0,0.1);
+    line-height: 1;
+    margin-top: 10px;
+    transition: color 2s ease-in-out 1s; /* Staggered accent transition */
+}
+
+#cake-container {
+    max-width: 90%;
+    width: 300px;
+    aspect-ratio: 16 / 9;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: scale(0.85);
+}
+
+#cake-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2), 0 0 35px 5px var(--accent1);
+    transition: box-shadow 2s ease-in-out 1s;
+}
+
+
+.love-note {
+    font-size: clamp(1.2rem, 2.5vw + 0.5rem, 1.5rem); /* Fluid typography */
+    color: var(--text-dark);
+    font-style: italic;
+    line-height: 1.6;
+    margin: 20px auto;
+    max-width: 600px;
+    transition: color 2s ease-in-out 0.5s;
+}
+
+.signature {
+    font-family: 'Quicksand', sans-serif;
+    font-size: clamp(1.2rem, 2.5vw + 0.5rem, 1.5rem); /* Fluid typography */
+    color: var(--text-dark);
+    margin-top: 20px;
+    font-style: italic;
+    font-weight: 600;
+    line-height: 1.5;
+    transition: color 2s ease-in-out 0.5s;
+}
+
+.no-italic {
+    font-style: normal;
+}
+
+/* Styles for word-by-word animation */
+.line {
+    overflow: hidden;
+    padding: 0.1em 0;
+}
+
+.line span {
+    display: inline-block;
+    will-change: transform, opacity; /* Performance hint */
+}
+
+.particle-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.particle {
+    position: absolute;
+    top: -50px;
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+}
+
+.particle.animate {
+    animation-name: gentleFall;
+    animation-timing-function: linear;
+}
+
+.emoji-rain { font-size: 2rem; }
+.confetti-piece { width: 8px; height: 8px; border-radius: 50%; }
+
+@keyframes gentleFall {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+.cursor-trail {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10001;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease-out, opacity 0.3s ease-out, background-color 2s ease-in-out;
+    opacity: 0;
+}
+
+/* --- Parallax Styles --- */
+span.parallax-el {
+    display: inline-block;
+    will-change: transform;
+}
+
+/* --- Music Visualizer Orb --- */
+.music-orb {
+    position: fixed;
+    z-index: 2; /* Positioned above the background elements */
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform, opacity;
+    animation: driftAndFade 6s ease-out forwards;
+}
+
+@keyframes driftAndFade {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 0.7;
+    }
+    50% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(-250px) scale(1.8);
+        opacity: 0;
+    }
+}
+
+/* --- Story Navigation --- */
+#story-navigation {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+#story-navigation.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(2rem);
+}
+
+.story-nav-button {
+    background-color: rgba(74, 63, 53, 0.7);
+    color: var(--text-light);
+    padding: 0.5rem;
+    border-radius: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    backdrop-filter: blur(5px);
+    border: none;
+    cursor: pointer;
+    font-family: 'Quicksand', sans-serif;
+    transition: background-color 0.2s, opacity 0.3s, transform 0.3s;
+    will-change: opacity, transform;
+}
+
+.story-nav-button:hover {
+    background-color: rgba(74, 63, 53, 0.9);
+}
+
+.story-nav-button.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8);
+}
+
+#story-mode-indicator-down {
+    padding-right: 1rem;
+}
+
+.story-nav-button svg {
+    animation: gentle-bob 2s infinite ease-in-out;
+}
+
+#story-mode-indicator-down span {
+    display: none; /* Hidden on mobile by default */
+}
+
+
+/* --- Flower Bouquet Canvas --- */
+#bouquet-section {
+    justify-content: center;
+    align-items: center;
+}
+
+#bouquet-canvas {
+    max-width: 90%;
+    max-height: 90%;
+    aspect-ratio: 1 / 1;
+    width: 500px;
+}
+
+/* --- Dynamic Backgrounds --- */
+#background-elements {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.background-scene {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+    pointer-events: none;
+}
+
+body.theme-night .night-sky { opacity: 1; }
+
+/* Night Sky Scene */
+.night-sky .moon {
+    position: absolute;
+    top: 10%;
+    left: 15%;
+    width: clamp(80px, 15vw, 150px);
+    height: clamp(80px, 15vw, 150px);
+    filter: drop-shadow(0 0 40px var(--accent1));
+}
+
+.night-sky .star {
+    position: absolute;
+    background-color: white;
+    border-radius: 50%;
+    animation: twinkle 5s infinite;
+}
+
+.night-sky .venus-container {
+    position: absolute;
+    top: 11%; /* Repositioned to align with new moon tilt */
+    left: 16.5%; /* Repositioned to align with new moon tilt */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.night-sky .venus {
+    width: 8px;
+    height: 8px;
+    background-color: #F7F5E6; /* More whitish color for Venus */
+    border-radius: 50%;
+    box-shadow: 0 0 8px 3px #fff, 
+                0 0 14px 6px #F7F5E6,
+                0 0 20px 10px rgba(247, 245, 230, 0.5);
+    animation: venus-glow 6s infinite ease-in-out;
+}
+
+.night-sky .venus-label {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 10px;
+    color: var(--text-light);
+    opacity: 0.6;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes venus-glow {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+
+@media (min-width: 768px) {
+    #story-mode-indicator-down span {
+        display: inline; /* Show text on larger screens */
+    }
+}
+
+@media (max-width: 768px) {
+    .content-section {
+        min-height: 85dvh; /* Reduce empty space on mobile */
+    }
+
+    .night-sky .venus-container {
+        top: 11%; /* Adjusted for mobile view */
+        left: 21%; /* Adjusted for mobile view */
+    }
+}
+
+
+@keyframes gentle-bob {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(3px);
+    }
+}
