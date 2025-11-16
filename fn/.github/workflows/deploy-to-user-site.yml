@@ -1,0 +1,46 @@
+name: Build and push to user-site repo under /fn (optional)
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    if: ${{ secrets.TARGET_REPO && secrets.TARGET_REPO_PAT }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Push built site into target repo's /fn folder
+        env:
+          TARGET_REPO: ${{ secrets.TARGET_REPO }} # format: owner/repo (e.g. residuetheorem/residuetheorem.github.io)
+          TARGET_REPO_PAT: ${{ secrets.TARGET_REPO_PAT }}
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: github-actions[bot]@users.noreply.github.com
+        run: |
+          set -e
+          git config --global user.name "$GIT_COMMITTER_NAME"
+          git config --global user.email "$GIT_COMMITTER_EMAIL"
+          tmpdir=$(mktemp -d)
+          echo "Cloning target repo: $TARGET_REPO"
+          git clone https://x-access-token:${TARGET_REPO_PAT}@github.com/${TARGET_REPO}.git "$tmpdir"
+          rm -rf "$tmpdir/fn" || true
+          mkdir -p "$tmpdir/fn"
+          cp -a dist/. "$tmpdir/fn/"
+          cd "$tmpdir"
+          git add -A
+          if git commit -m "Deploy /fn from ${GITHUB_REPOSITORY}@${GITHUB_SHA}"; then
+            git push https://x-access-token:${TARGET_REPO_PAT}@github.com/${TARGET_REPO}.git
+          else
+            echo "No changes to push"
+          fi
