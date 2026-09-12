@@ -1,0 +1,4010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P2P DROP • OFFLINE — Serverless Local File Sharing</title>
+  <meta name="description" content="100% offline-capable, serverless peer-to-peer file sharing web application powered by native WebRTC and offline QR code signaling.">
+  <meta property="og:title" content="P2P DROP • OFFLINE — Serverless Local File Sharing">
+  <meta property="og:description" content="Direct peer-to-peer 100MB+ file transfers over local Wi-Fi or Hotspot with zero servers and end-to-end encryption.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="manifest" href="./manifest.json">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script>
+    /* Immediate cache busting & early global bindings for instant responsiveness */
+    if (typeof caches !== 'undefined') {
+      caches.delete('p2p-drop-offline-v1').catch(function() {});
+    }
+
+    var openSettingsModal = function() {
+      var modal = document.getElementById('settings-modal');
+      if (modal) {
+        modal.classList.add('open');
+        modal.style.display = 'flex';
+      }
+    };
+    window.openSettingsModal = openSettingsModal;
+    globalThis.openSettingsModal = openSettingsModal;
+
+    var closeSettingsModal = function() {
+      var modal = document.getElementById('settings-modal');
+      if (modal) {
+        modal.classList.remove('open');
+        modal.style.display = 'none';
+      }
+    };
+    window.closeSettingsModal = closeSettingsModal;
+    globalThis.closeSettingsModal = closeSettingsModal;
+
+    var toggleSettingsModal = function(force) {
+      var modal = document.getElementById('settings-modal');
+      if (modal) {
+        var isCurrentlyOpen = modal.classList.contains('open') || modal.style.display === 'flex';
+        var shouldOpen = typeof force === 'boolean' ? force : !isCurrentlyOpen;
+        if (shouldOpen) {
+          openSettingsModal();
+        } else {
+          closeSettingsModal();
+        }
+      }
+    };
+    window.toggleSettingsModal = toggleSettingsModal;
+    globalThis.toggleSettingsModal = toggleSettingsModal;
+
+    var toggleDiagnostics = function() {
+      var p = document.getElementById('diagnostics-panel');
+      if (p) {
+        p.classList.toggle('open');
+      }
+    };
+    window.toggleDiagnostics = toggleDiagnostics;
+    globalThis.toggleDiagnostics = toggleDiagnostics;
+
+    var toggleRawBox = function(elementId) {
+      var el = document.getElementById(elementId);
+      if (el) {
+        var isHidden = window.getComputedStyle(el).display === 'none' || el.style.display === 'none';
+        el.style.display = isHidden ? 'flex' : 'none';
+      }
+    };
+    window.toggleRawBox = toggleRawBox;
+    globalThis.toggleRawBox = toggleRawBox;
+
+    var switchRole = function(role) {
+      if (typeof window.switchRoleApp === 'function') {
+        window.switchRoleApp(role);
+      } else {
+        var ta = document.getElementById('tab-role-a');
+        var tb = document.getElementById('tab-role-b');
+        if (ta) ta.classList.toggle('active', role === 'A');
+        if (tb) tb.classList.toggle('active', role === 'B');
+        var fi = document.getElementById('flow-initiator');
+        var fj = document.getElementById('flow-joiner');
+        if (fi) fi.style.display = role === 'A' ? 'flex' : 'none';
+        if (fj) fj.style.display = role === 'B' ? 'flex' : 'none';
+      }
+    };
+    window.switchRole = switchRole;
+    globalThis.switchRole = switchRole;
+
+    var switchTransferMode = function(mode) {
+      if (typeof window.switchTransferModeApp === 'function') {
+        window.switchTransferModeApp(mode);
+      }
+    };
+    window.switchTransferMode = switchTransferMode;
+    globalThis.switchTransferMode = switchTransferMode;
+
+    var refreshPeerCatalog = function() {
+      if (typeof window.refreshPeerCatalogApp === 'function') {
+        window.refreshPeerCatalogApp();
+      }
+    };
+    window.refreshPeerCatalog = refreshPeerCatalog;
+    globalThis.refreshPeerCatalog = refreshPeerCatalog;
+
+    var downloadAllPeerFiles = function() {
+      if (typeof window.downloadAllPeerFilesApp === 'function') {
+        window.downloadAllPeerFilesApp();
+      }
+    };
+    window.downloadAllPeerFiles = downloadAllPeerFiles;
+    globalThis.downloadAllPeerFiles = downloadAllPeerFiles;
+
+    var requestPeerFile = function(id) {
+      if (typeof window.requestPeerFileApp === 'function') {
+        window.requestPeerFileApp(id);
+      }
+    };
+    window.requestPeerFile = requestPeerFile;
+    globalThis.requestPeerFile = requestPeerFile;
+
+    var clearMySharedFiles = function() {
+      if (typeof window.clearMySharedFilesApp === 'function') {
+        window.clearMySharedFilesApp();
+      }
+    };
+    window.clearMySharedFiles = clearMySharedFiles;
+    globalThis.clearMySharedFiles = clearMySharedFiles;
+
+    var removeMySharedFile = function(id) {
+      if (typeof window.removeMySharedFileApp === 'function') {
+        window.removeMySharedFileApp(id);
+      }
+    };
+    window.removeMySharedFile = removeMySharedFile;
+    globalThis.removeMySharedFile = removeMySharedFile;
+
+    var closeScannerModal = function() {
+      if (typeof window.closeScannerModalApp === 'function') {
+        window.closeScannerModalApp();
+      } else {
+        var modal = document.getElementById('scanner-modal');
+        if (modal) modal.classList.remove('open');
+      }
+    };
+    window.closeScannerModal = closeScannerModal;
+    globalThis.closeScannerModal = closeScannerModal;
+
+    var openScannerModal = function(target) {
+      if (typeof window.openScannerModalApp === 'function') {
+        window.openScannerModalApp(target);
+      }
+    };
+    window.openScannerModal = openScannerModal;
+    globalThis.openScannerModal = openScannerModal;
+
+    var pasteFromClipboard = function(id) {
+      if (typeof window.pasteFromClipboardApp === 'function') {
+        window.pasteFromClipboardApp(id);
+      }
+    };
+    window.pasteFromClipboard = pasteFromClipboard;
+    globalThis.pasteFromClipboard = pasteFromClipboard;
+
+    var applyAnswerSDP = function() {
+      if (typeof window.applyAnswerSDPApp === 'function') {
+        window.applyAnswerSDPApp();
+      }
+    };
+    window.applyAnswerSDP = applyAnswerSDP;
+    globalThis.applyAnswerSDP = applyAnswerSDP;
+
+    var generateAnswerFromInput = function() {
+      if (typeof window.generateAnswerFromInputApp === 'function') {
+        window.generateAnswerFromInputApp();
+      }
+    };
+    window.generateAnswerFromInput = generateAnswerFromInput;
+    globalThis.generateAnswerFromInput = generateAnswerFromInput;
+
+    var flipCamera = function() {
+      if (typeof window.flipCameraApp === 'function') {
+        window.flipCameraApp();
+      }
+    };
+    window.flipCamera = flipCamera;
+    globalThis.flipCamera = flipCamera;
+
+    var disconnectPeer = function() {
+      if (typeof window.disconnectPeerApp === 'function') {
+        window.disconnectPeerApp();
+      }
+    };
+    window.disconnectPeer = disconnectPeer;
+    globalThis.disconnectPeer = disconnectPeer;
+
+    var cancelActiveTransfer = function() {
+      if (typeof window.cancelActiveTransferApp === 'function') {
+        window.cancelActiveTransferApp();
+      }
+    };
+    window.cancelActiveTransfer = cancelActiveTransfer;
+    globalThis.cancelActiveTransfer = cancelActiveTransfer;
+
+    var sendPing = function() {
+      if (typeof window.sendPingApp === 'function') {
+        window.sendPingApp();
+      }
+    };
+    window.sendPing = sendPing;
+    globalThis.sendPing = sendPing;
+
+    var resetConnection = function() {
+      if (typeof window.resetConnectionApp === 'function') {
+        window.resetConnectionApp();
+      }
+    };
+    window.resetConnection = resetConnection;
+    globalThis.resetConnection = resetConnection;
+
+    var handleSendChat = function(e) {
+      if (typeof window.handleSendChatApp === 'function') {
+        window.handleSendChatApp(e);
+      }
+    };
+    window.handleSendChat = handleSendChat;
+    globalThis.handleSendChat = handleSendChat;
+  </script>
+
+  <style>
+    /* ==========================================================================
+       P2P DROP • MODERN FLAT DESIGN (NO CARDS)
+       ========================================================================== */
+    :root {
+      --bg: #0a0a0c;
+      --surface: #0a0a0c;
+      --surface-elevated: #111114;
+      --surface-hover: #17171b;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.18);
+      --border-focus: #ffffff;
+      --text: #f4f4f5;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --accent: #ffffff;
+      --accent-bg: #ffffff;
+      --accent-text: #0a0a0c;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+      --radius-sm: 4px;
+      --radius-md: 4px;
+      --radius-lg: 6px;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    button, input, textarea {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.14);
+      border-radius: 2px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Layout */
+    .app-container {
+      width: 100%;
+      max-width: 660px;
+      margin: 0 auto;
+      padding: 24px 18px 48px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      flex: 1;
+    }
+
+    /* Flat Header */
+    header.app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 0 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ffffff;
+      display: inline-block;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+    }
+
+    .status-badge .indicator {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-dim);
+    }
+
+    .status-badge.pairing {
+      border-color: rgba(255, 255, 255, 0.35);
+      color: var(--text);
+    }
+    .status-badge.pairing .indicator {
+      background: #ffffff;
+      animation: pulse 1.2s infinite;
+    }
+
+    .status-badge.connected {
+      border-color: #ffffff;
+      background: #ffffff;
+      color: #000000;
+      font-weight: 600;
+    }
+    .status-badge.connected .indicator {
+      background: #000000;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.85); }
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Flat Section Containers (NO CARDS) */
+    .card {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      border-radius: 0;
+      padding: 24px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card:last-child {
+      border-bottom: none;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    /* Flat Buttons */
+    .btn {
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      white-space: nowrap;
+      user-select: none;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: #ffffff;
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+
+    .btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: #ffffff;
+      color: #0a0a0c;
+      border-color: #ffffff;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #e4e4e7;
+      border-color: #e4e4e7;
+      color: #0a0a0c;
+    }
+
+    .btn-danger {
+      border-color: rgba(239, 68, 68, 0.35);
+      color: #f87171;
+    }
+    .btn-danger:hover:not(:disabled) {
+      background: rgba(239, 68, 68, 0.12);
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 11px;
+    }
+
+    .btn-ghost {
+      border-color: transparent;
+      color: var(--text-muted);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: transparent;
+      color: var(--text);
+    }
+
+    /* Flat Tabs Switch */
+    .role-segmented {
+      display: flex;
+      gap: 24px;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      margin-bottom: 4px;
+    }
+
+    .role-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 10px 2px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s ease, border-color 0.15s ease;
+      margin-bottom: -1px;
+      border-radius: 0;
+    }
+
+    .role-btn:hover {
+      color: var(--text);
+    }
+
+    .role-btn.active {
+      background: transparent;
+      color: #ffffff;
+      border-bottom-color: #ffffff;
+      font-weight: 600;
+      box-shadow: none;
+    }
+
+    /* Transfer Mode Segmented Tabs */
+    .mode-segmented {
+      display: flex;
+      gap: 20px;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+      margin: 14px 0 16px 0;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 10px 4px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.15s ease, border-color 0.15s ease;
+      margin-bottom: -1px;
+      border-radius: 0;
+    }
+
+    .mode-btn:hover {
+      color: var(--text);
+    }
+
+    .mode-btn.active {
+      color: #ffffff;
+      border-bottom-color: #ffffff;
+      font-weight: 600;
+    }
+
+    .badge-count {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 9999px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+    }
+
+    /* Flat Step Sections (No Nested Boxes) */
+    .step-box {
+      border: none;
+      background: transparent;
+      border-radius: 0;
+      padding: 18px 0;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .step-box:first-of-type {
+      border-top: none;
+      padding-top: 10px;
+    }
+
+    .step-heading {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .step-instruction {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Flat QR Display */
+    .qr-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 0;
+      background: transparent;
+      border: none;
+    }
+
+    .qr-frame {
+      background: #ffffff;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      max-width: 100%;
+    }
+
+    .qr-canvas-holder {
+      display: block;
+      width: 220px;
+      height: 220px;
+      max-width: 100%;
+    }
+
+    .qr-canvas-holder canvas,
+    .qr-canvas-holder svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      image-rendering: pixelated;
+    }
+
+    .qr-caption {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    /* Flat Code Textarea */
+    .code-box {
+      width: 100%;
+      background: #111114;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 10px 12px;
+      resize: vertical;
+      min-height: 60px;
+      line-height: 1.4;
+    }
+
+    .code-box:focus {
+      outline: none;
+      border-color: var(--border-strong);
+      color: var(--text);
+    }
+
+    /* Transfer Dashboard (Active View) */
+    #transfer-interface {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .connection-banner {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      border-radius: 0;
+      padding: 16px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .peer-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Flat Drop Zone */
+    .drop-zone {
+      border: 1px dashed var(--border-strong);
+      background: transparent;
+      border-radius: var(--radius-md);
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: border-color 0.15s ease, background-color 0.15s ease;
+      min-height: 140px;
+      margin: 20px 0;
+    }
+
+    .drop-zone:hover, .drop-zone.dragover {
+      border-color: #ffffff;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .drop-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      font-size: 14px;
+      margin-bottom: 2px;
+    }
+
+    .drop-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .drop-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Flat Transfer Progress Container */
+    .transfer-box {
+      border: none;
+      background: transparent;
+      border-bottom: 1px solid var(--border);
+      border-radius: 0;
+      padding: 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .transfer-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .transfer-file-name {
+      font-weight: 600;
+      font-size: 13px;
+      word-break: break-all;
+    }
+
+    .transfer-direction {
+      padding: 2px 7px;
+      border: 1px solid var(--border-strong);
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: #ffffff;
+      border-radius: 3px;
+      transition: width 0.1s linear;
+    }
+
+    .progress-ascii {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .transfer-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stat-label {
+      color: var(--text-dim);
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .stat-val {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-mono);
+    }
+
+    .transfer-meta-chips {
+      display: none;
+    }
+
+    /* Flat Received Files List */
+    .files-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .file-item {
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      border-radius: 0;
+      padding: 12px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .file-item:last-child {
+      border-bottom: none;
+    }
+
+    .file-details {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .file-icon-box {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+      background: transparent;
+      color: var(--text-muted);
+    }
+
+    .file-info-text {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .file-name-text {
+      font-weight: 500;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 340px;
+      color: var(--text);
+    }
+
+    .file-size-text {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .file-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    /* Flat Messages Box */
+    .quick-chat-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: #111114;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--border-strong);
+    }
+
+    .chat-log {
+      max-height: 120px;
+      overflow-y: auto;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .chat-msg {
+      display: flex;
+      gap: 6px;
+    }
+
+    .chat-sender {
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    /* Flat Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .scanner-modal, .settings-modal-card {
+      background: #111114;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: none;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .modal-body {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .video-viewport {
+      position: relative;
+      width: 100%;
+      height: 260px;
+      background: #000000;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .video-viewport video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .scanner-reticle {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border: 1px dashed rgba(255, 255, 255, 0.4);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .scanner-reticle::before,
+    .scanner-reticle::after {
+      content: "";
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-color: #ffffff;
+      border-style: solid;
+      pointer-events: none;
+    }
+
+    .scanner-reticle::before {
+      top: -1px;
+      left: -1px;
+      border-width: 2px 0 0 2px;
+    }
+
+    .scanner-reticle::after {
+      bottom: -1px;
+      right: -1px;
+      border-width: 0 2px 2px 0;
+    }
+
+    .scanner-laser {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1.5px;
+      background: #ffffff;
+      animation: laserSweep 2s ease-in-out infinite;
+    }
+
+    @keyframes laserSweep {
+      0%, 100% { top: 10%; opacity: 0.3; }
+      50% { top: 90%; opacity: 1; }
+    }
+
+    .scanner-footer-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+    }
+
+    /* Flat Settings Rows */
+    .settings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border: none;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      border-radius: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+
+    .setting-row:hover {
+      background: transparent;
+    }
+
+    .setting-row:hover .setting-title {
+      color: #ffffff;
+    }
+
+    .setting-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .setting-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .setting-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .setting-row input[type="checkbox"] {
+      accent-color: #ffffff;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* Flat Footer */
+    footer.app-footer {
+      border-top: 1px solid var(--border);
+      padding: 16px 0 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
+
+    .diagnostics-detail {
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .diagnostics-detail.open {
+      display: flex;
+    }
+
+    .diag-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    /* Flat Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(10px);
+      background: #ffffff;
+      color: #0a0a0c;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+      z-index: 10000;
+      opacity: 0;
+      transition: all 0.2s ease;
+      pointer-events: none;
+      box-shadow: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 640px) {
+      .app-container {
+        padding: 16px 14px 40px 14px;
+      }
+      .qr-canvas-holder {
+        width: 200px;
+        height: 200px;
+      }
+      .file-name-text {
+        max-width: 180px;
+      }
+      .transfer-stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Flat Header -->
+    <header class="app-header" id="main-header">
+      <div class="header-brand">
+        <div class="brand-title">
+          <span class="brand-dot"></span>
+          P2P DROP
+        </div>
+        <div class="status-badge disconnected" id="connection-badge">
+          <span class="indicator"></span>
+          <span id="connection-status-text">Not connected</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-open-settings" onclick="window.openSettingsModal ? window.openSettingsModal() : (window.toggleSettingsModal && window.toggleSettingsModal(true))" title="Settings">
+          <span>⚙ Settings</span>
+        </button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-reset-connection" title="Start over">
+          <span>↺ Start over</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         SECTION 1: PAIRING INTERFACE (Visible when disconnected or connecting)
+         ==================================================================== -->
+    <section id="pairing-wizard" class="card">
+      
+      <!-- Role Selector Tabs -->
+      <div class="role-segmented" role="tablist">
+        <button type="button" class="role-btn active" id="tab-role-a" onclick="window.switchRole && window.switchRole('A')">
+          Device 1 (Show QR)
+        </button>
+        <button type="button" class="role-btn" id="tab-role-b" onclick="window.switchRole && window.switchRole('B')">
+          Device 2 (Scan QR)
+        </button>
+      </div>
+      <div style="padding: 10px 14px 2px 14px; font-size: 12px; color: var(--text-muted); text-align: center; line-height: 1.4;">
+        ✦ <strong>Full 2-way connection:</strong> Once paired, both devices can send, browse, and download files simultaneously.
+      </div>
+
+      <!-- FLOW A: SENDER -->
+      <div id="flow-initiator" style="display: flex; flex-direction: column;">
+        
+        <!-- Step 1: Create connection QR -->
+        <div class="step-box">
+          <div class="step-heading">
+            <span>Step 1: Create connection QR code on Device 1</span>
+            <button type="button" class="btn btn-sm btn-primary" id="btn-create-offer">
+              Create QR code
+            </button>
+          </div>
+          <p class="step-instruction">
+            Create a QR code for Device 2 to scan.
+          </p>
+
+          <div id="offer-qr-container" style="display: none; flex-direction: column; gap: 10px;">
+            <div class="qr-card">
+              <div class="qr-frame">
+                <div class="qr-canvas-holder" id="qr-offer-holder"></div>
+              </div>
+              <div class="qr-caption">Scan this code with Device 2</div>
+            </div>
+
+            <div style="display: flex; gap: 8px; justify-content: center;">
+              <button type="button" class="btn btn-sm" id="btn-copy-offer">Copy text code</button>
+              <button type="button" class="btn btn-sm btn-ghost" onclick="window.toggleRawBox && window.toggleRawBox('offer-raw-wrap')">View text code</button>
+            </div>
+
+            <div id="offer-raw-wrap" style="display: none;">
+              <textarea class="code-box" id="offer-sdp-text" readonly></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 2: Scan Return Code -->
+        <div class="step-box">
+          <div class="step-heading">
+            <span>Step 2: Finish connection (Scan response from Device 2)</span>
+          </div>
+          <p class="step-instruction">
+            Once Device 2 scans your code, scan the response code displayed on their screen.
+          </p>
+
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-scan-answer" onclick="window.openScannerModal && window.openScannerModal('answer')">
+              📷 Scan response code
+            </button>
+            <button type="button" class="btn btn-sm btn-ghost" onclick="window.toggleRawBox && window.toggleRawBox('answer-paste-wrap')">
+              Paste code manually
+            </button>
+          </div>
+
+          <div id="answer-paste-wrap" style="display: none; flex-direction: column; gap: 8px;">
+            <textarea class="code-box" id="input-answer-sdp" placeholder="Paste response code from Device 2 here..."></textarea>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn btn-sm" id="btn-paste-answer" onclick="window.pasteFromClipboard && window.pasteFromClipboard('input-answer-sdp')">
+                Paste
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" id="btn-apply-answer" onclick="window.applyAnswerSDP && window.applyAnswerSDP()">
+                Connect
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FLOW B: RECEIVER -->
+      <div id="flow-joiner" style="display: none; flex-direction: column;">
+        
+        <div class="step-box">
+          <div class="step-heading">
+            <span>Step 1: Scan QR code on Device 1</span>
+          </div>
+          <p class="step-instruction">
+            Scan the QR code displayed on Device 1.
+          </p>
+
+          <div style="display: flex; gap: 8px;">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-scan-offer" onclick="window.openScannerModal && window.openScannerModal('offer')">
+              📷 Scan Device 1 code
+            </button>
+            <button type="button" class="btn btn-sm btn-ghost" onclick="window.toggleRawBox && window.toggleRawBox('offer-paste-wrap')">
+              Paste code manually
+            </button>
+          </div>
+
+          <div id="offer-paste-wrap" style="display: none; flex-direction: column; gap: 8px;">
+            <textarea class="code-box" id="input-offer-sdp" placeholder="Paste code from Device 1 here..."></textarea>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn btn-sm" id="btn-paste-offer" onclick="window.pasteFromClipboard && window.pasteFromClipboard('input-offer-sdp')">
+                Paste
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" id="btn-generate-answer" onclick="window.generateAnswerFromInput && window.generateAnswerFromInput()">
+                Create response code
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Response QR Container -->
+        <div id="answer-qr-container" style="display: none; flex-direction: column; gap: 10px;" class="step-box">
+          <div class="step-heading">
+            <span>Step 2: Show response code to Device 1</span>
+          </div>
+          <div class="qr-card">
+            <div class="qr-frame">
+              <div class="qr-canvas-holder" id="qr-answer-holder"></div>
+            </div>
+            <div class="qr-caption">Show this code to Device 1 to complete connection</div>
+          </div>
+
+          <div style="display: flex; gap: 8px; justify-content: center;">
+            <button type="button" class="btn btn-sm" id="btn-copy-answer">Copy text code</button>
+            <button type="button" class="btn btn-sm btn-ghost" onclick="window.toggleRawBox && window.toggleRawBox('answer-raw-wrap')">View text code</button>
+          </div>
+
+          <div id="answer-raw-wrap" style="display: none;">
+            <textarea class="code-box" id="answer-sdp-text" readonly></textarea>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         SECTION 2: ACTIVE TRANSFER INTERFACE (Visible when connected)
+         ==================================================================== -->
+    <section id="transfer-interface">
+
+      <!-- Connected Status Bar -->
+      <div class="connection-banner">
+        <div class="peer-info">
+          <span class="status-badge connected">
+            <span class="indicator"></span>
+            Connected
+          </span>
+          <span id="latency-meter" style="color: var(--text-dim); font-size: 12px;">Direct local connection</span>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-sm btn-ghost" onclick="window.sendPing && window.sendPing()">Test connection</button>
+          <button type="button" class="btn btn-sm btn-danger" onclick="window.disconnectPeer && window.disconnectPeer()">Disconnect</button>
+        </div>
+      </div>
+
+      <!-- Transfer Navigation Tabs (Direct Send vs FTP Browse vs My Shares) -->
+      <div class="mode-segmented" role="tablist">
+        <button type="button" class="mode-btn active" id="tab-mode-direct" onclick="window.switchTransferMode && window.switchTransferMode('direct')">
+          ⚡ Direct Send
+        </button>
+        <button type="button" class="mode-btn" id="tab-mode-browse" onclick="window.switchTransferMode && window.switchTransferMode('browse')">
+          📁 Browse Peer's Files <span class="badge-count" id="badge-peer-count">0</span>
+        </button>
+        <button type="button" class="mode-btn" id="tab-mode-share" onclick="window.switchTransferMode && window.switchTransferMode('share')">
+          📤 My Shared Files <span class="badge-count" id="badge-my-count">0</span>
+        </button>
+      </div>
+
+      <!-- VIEW 1: Direct Push Send -->
+      <div id="view-mode-direct" style="display: flex; flex-direction: column;">
+        <div class="drop-zone" id="drop-zone">
+          <input type="file" id="file-input" multiple style="display: none;">
+          <div class="drop-icon">↑</div>
+          <div class="drop-title">Choose files to send immediately</div>
+          <div class="drop-sub">or drag and drop them here</div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: Browse Peer's Files (FTP / Remote Directory Pull Mode) -->
+      <div id="view-mode-browse" style="display: none; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+        <div class="card" style="margin-bottom: 0;">
+          <div class="card-header">
+            <div class="card-title">
+              <span>Peer's Shared Files (<span id="peer-shared-count">0</span>)</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn btn-sm btn-ghost" onclick="window.refreshPeerCatalog && window.refreshPeerCatalog()">↻ Refresh</button>
+              <button type="button" class="btn btn-sm btn-primary" id="btn-download-all-peer" onclick="window.downloadAllPeerFiles && window.downloadAllPeerFiles()" disabled>⬇ Download all</button>
+            </div>
+          </div>
+          <div id="peer-files-empty-msg" style="padding: 24px 16px; text-align: center; color: var(--text-dim); font-size: 13px; line-height: 1.5;">
+            No files shared by the other device yet.<br>
+            <span style="font-size: 11px; color: var(--text-muted);">The other device can open "My Shared Files" and add files or folders to let you browse and download them on-demand.</span>
+          </div>
+          <div class="files-list" id="peer-files-container"></div>
+        </div>
+      </div>
+
+      <!-- VIEW 3: My Shared Files (Host files for peer to browse) -->
+      <div id="view-mode-share" style="display: none; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+        <div class="card" style="margin-bottom: 0;">
+          <div class="card-header">
+            <div class="card-title">
+              <span>Files You Are Hosting (<span id="my-shared-count">0</span>)</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button type="button" class="btn btn-sm btn-primary" onclick="document.getElementById('share-file-input').click()">+ Share files</button>
+              <button type="button" class="btn btn-sm btn-ghost" onclick="document.getElementById('share-folder-input').click()">+ Share folder</button>
+              <button type="button" class="btn btn-sm btn-ghost" onclick="window.clearMySharedFiles && window.clearMySharedFiles()">Clear all</button>
+            </div>
+          </div>
+          <input type="file" id="share-file-input" multiple style="display: none;">
+          <input type="file" id="share-folder-input" webkitdirectory directory multiple style="display: none;">
+          
+          <div id="my-files-empty-msg" style="padding: 24px 16px; text-align: center; color: var(--text-dim); font-size: 13px; line-height: 1.5;">
+            You haven't shared any files yet.<br>
+            <span style="font-size: 11px; color: var(--text-muted);">Add files or folders here. The other device will be able to browse them like an FTP library and download on-demand.</span>
+          </div>
+          <div class="files-list" id="my-shared-files-container"></div>
+        </div>
+      </div>
+
+      <!-- Active Transfer Progress -->
+      <div id="active-transfer-card" class="transfer-box" style="display: none;">
+        <div class="transfer-meta">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="transfer-direction" id="transfer-direction-badge">Sending</span>
+            <span class="transfer-file-name" id="transfer-file-name">file.pdf</span>
+          </div>
+          <button type="button" class="btn btn-sm btn-ghost" id="btn-cancel-transfer" onclick="window.cancelActiveTransfer && window.cancelActiveTransfer()">
+            ✕ Cancel
+          </button>
+        </div>
+
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="transfer-progress-fill"></div>
+        </div>
+
+        <div class="progress-ascii">
+          <span id="transfer-progress-ascii">0%</span>
+          <span id="transfer-chunk-stat">0 MB / 0 MB</span>
+        </div>
+
+        <div class="transfer-stats-grid">
+          <div class="stat-item">
+            <span class="stat-label">Speed</span>
+            <span class="stat-val" id="stat-speed">0.0 MB/s</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Transferred</span>
+            <span class="stat-val" id="stat-bytes">0 MB / 0 MB</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Time remaining</span>
+            <span class="stat-val" id="stat-eta">--:--</span>
+          </div>
+        </div>
+
+        <!-- Hidden elements to preserve JS compatibility -->
+        <div class="transfer-meta-chips" style="display: none;">
+          <span id="stat-crc"></span>
+          <span id="stat-buffer"></span>
+          <span id="stat-storage-mode"></span>
+        </div>
+      </div>
+
+      <!-- Received Files Section -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <span>Received files (<span id="received-count">0</span>)</span>
+          </div>
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); cursor: pointer;">
+            <input type="checkbox" id="auto-download-toggle" checked style="accent-color: #fff;">
+            <span>Save automatically</span>
+          </label>
+        </div>
+
+        <div id="empty-files-msg" style="padding: 16px 0; text-align: center; color: var(--text-dim); font-size: 12px;">
+          No files received yet.
+        </div>
+
+        <div class="files-list" id="received-files-container"></div>
+      </div>
+
+      <!-- Messages -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Messages</div>
+        </div>
+        <div class="chat-log" id="chat-log">
+          <div class="chat-msg" style="color: var(--text-dim);">
+            <span>Direct channel ready. Messages go straight between your devices without any server.</span>
+          </div>
+        </div>
+        <form class="quick-chat-row" id="chat-form" onsubmit="window.handleSendChat && window.handleSendChat(event)">
+          <input type="text" id="chat-input" class="chat-input" placeholder="Type a message..." autocomplete="off">
+          <button type="submit" class="btn btn-sm btn-primary">Send</button>
+        </form>
+      </div>
+
+    </section>
+
+    <!-- Flat Footer -->
+    <footer class="app-footer">
+      <div>
+        <span>Direct device-to-device transfer • No cloud servers</span>
+        <span style="display:none;" id="dc-state-text">READY</span>
+        <span style="display:none;" id="ice-state-text">CONNECTED</span>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="window.toggleDiagnostics && window.toggleDiagnostics()">
+        Connection details ▾
+      </button>
+      <div class="diagnostics-detail" id="diagnostics-panel">
+        <div class="diag-line"><span>Connection:</span><span>Direct local connection (Wi-Fi or Hotspot)</span></div>
+        <div class="diag-line"><span>Security:</span><span>End-to-end encrypted</span></div>
+        <div class="diag-line"><span>Status:</span><span>Direct stream active</span></div>
+        <div style="display:none;">
+          <span id="diag-gathering"></span>
+          <span id="diag-signaling"></span>
+          <span id="diag-candidates"></span>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ====================================================================
+       SETTINGS MODAL (Clear, Plain Language)
+       ==================================================================== -->
+  <div class="modal-overlay" id="settings-modal" onclick="if(event.target === this) { if(window.closeSettingsModal) window.closeSettingsModal(); else if(window.toggleSettingsModal) window.toggleSettingsModal(false); }">
+    <div class="settings-modal-card">
+      <div class="modal-header">
+        <span class="modal-title">Settings</span>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-close-settings" onclick="if(window.closeSettingsModal) window.closeSettingsModal(); else if(window.toggleSettingsModal) window.toggleSettingsModal(false);">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="settings-list">
+          <label class="setting-row">
+            <div class="setting-info">
+              <span class="setting-title">High-speed mode</span>
+              <span class="setting-desc">Sends data in larger batches for faster transfer speeds</span>
+            </div>
+            <input type="checkbox" id="opt-turbo-pipeline" checked>
+          </label>
+
+          <label class="setting-row">
+            <div class="setting-info">
+              <span class="setting-title">Remove photo location and info</span>
+              <span class="setting-desc">Clears camera details and GPS location from photos before sending</span>
+            </div>
+            <input type="checkbox" id="opt-strip-metadata" checked>
+          </label>
+
+          <label class="setting-row">
+            <div class="setting-info">
+              <span class="setting-title">Hide original file names</span>
+              <span class="setting-desc">Replaces file names with random numbers for privacy</span>
+            </div>
+            <input type="checkbox" id="opt-blind-transfer">
+          </label>
+
+          <label class="setting-row">
+            <div class="setting-info">
+              <span class="setting-title">Simpler QR codes</span>
+              <span class="setting-desc">Compresses code data so phone cameras scan faster</span>
+            </div>
+            <input type="checkbox" id="opt-anonymize-sdp" checked>
+          </label>
+
+          <label class="setting-row">
+            <div class="setting-info">
+              <span class="setting-title">Clear memory after transfer</span>
+              <span class="setting-desc">Erases temporary file data from device memory right after sending</span>
+            </div>
+            <input type="checkbox" id="opt-zeroize-memory" checked>
+          </label>
+
+          <label class="setting-row">
+            <div class="setting-info">
+              <span class="setting-title">Delete after saving</span>
+              <span class="setting-desc">Removes received files from memory immediately after you download them</span>
+            </div>
+            <input type="checkbox" id="opt-burn-download">
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       CAMERA SCANNER MODAL (Flat, Simple Language)
+       ==================================================================== -->
+  <div class="modal-overlay" id="scanner-modal" onclick="if(event.target === this && window.closeScannerModal) window.closeScannerModal()">
+    <div class="scanner-modal">
+      <div class="modal-header">
+        <span class="modal-title" id="scanner-modal-title">Scan QR Code</span>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="window.closeScannerModal && window.closeScannerModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="video-viewport">
+          <video id="scanner-video" playsinline autoplay muted></video>
+          <div class="scanner-reticle">
+            <div class="scanner-laser"></div>
+          </div>
+        </div>
+        <div id="scanner-status" style="font-size: 12px; text-align: center; color: var(--text-muted);">
+          Point your camera at the QR code on the other device
+        </div>
+
+        <div class="scanner-footer-actions">
+          <button type="button" class="btn btn-sm" id="btn-flip-cam" onclick="window.flipCamera && window.flipCamera()">
+            Switch camera
+          </button>
+          <button type="button" class="btn btn-sm btn-ghost" onclick="window.closeScannerModal && window.closeScannerModal()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Audio ping synthesizer element -->
+  <script>
+    /* ==========================================================================
+       OFFLINE AUDIO SYNTHESIZER (Web Audio API)
+       ========================================================================== */
+    const audioCtx = (function() {
+      let ctx = null;
+      return function() {
+        if (!ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) ctx = new AudioContext();
+        }
+        if (ctx && ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      };
+    })();
+
+    function playTone(freq, type = 'sine', duration = 0.15, vol = 0.05) {
+      try {
+        const ctx = audioCtx();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(vol, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function soundConnected() {
+      playTone(587.33, 'sine', 0.1, 0.06); // D5
+      setTimeout(() => playTone(880, 'sine', 0.2, 0.06), 100); // A5
+    }
+
+    function soundComplete() {
+      playTone(523.25, 'sine', 0.1, 0.06); // C5
+      setTimeout(() => playTone(659.25, 'sine', 0.1, 0.06), 100); // E5
+      setTimeout(() => playTone(783.99, 'sine', 0.2, 0.06), 200); // G5
+    }
+
+    function soundPing() {
+      playTone(700, 'triangle', 0.06, 0.03);
+    }
+  </script>
+
+  <!-- ==========================================================================
+       PURE JAVASCRIPT QR CODE GENERATOR (100% INLINE, NO CDN, NO DEPENDENCY)
+       Supports all 40 QR Versions, Reed-Solomon GF(256), Byte Mode & SVG/Canvas
+       ========================================================================== -->
+  <script>
+    (function(exports) {
+      function QRCodeModel(typeNumber, errorCorrectionLevel) {
+        this.typeNumber = typeNumber;
+        this.errorCorrectionLevel = errorCorrectionLevel;
+        this.modules = null;
+        this.moduleCount = 0;
+        this.dataCache = null;
+        this.dataList = [];
+      }
+
+      var QRMode = { MODE_8BIT_BYTE: 4 };
+      var QRErrorCorrectionLevel = { L: 1, M: 0, Q: 3, H: 2 };
+      var QRMaskPattern = {
+        PATTERN000: 0, PATTERN001: 1, PATTERN010: 2, PATTERN011: 3,
+        PATTERN100: 4, PATTERN101: 5, PATTERN110: 6, PATTERN111: 7
+      };
+
+      var QRUtil = {
+        PATTERN_POSITION_TABLE: [
+          [], [6, 18], [6, 22], [6, 26], [6, 30], [6, 34],
+          [6, 22, 38], [6, 24, 42], [6, 26, 46], [6, 28, 50],
+          [6, 30, 54], [6, 32, 58], [6, 34, 62], [6, 26, 46, 66],
+          [6, 26, 48, 70], [6, 26, 50, 74], [6, 30, 54, 78],
+          [6, 30, 56, 82], [6, 30, 58, 86], [6, 34, 62, 90],
+          [6, 28, 50, 72, 94], [6, 26, 50, 74, 98], [6, 30, 54, 78, 102],
+          [6, 28, 54, 80, 106], [6, 32, 58, 84, 110], [6, 30, 58, 86, 114],
+          [6, 34, 62, 90, 118], [6, 26, 50, 74, 98, 122], [6, 30, 54, 78, 102, 126],
+          [6, 26, 52, 78, 104, 130], [6, 30, 56, 82, 108, 134],
+          [6, 34, 60, 86, 112, 138], [6, 30, 58, 86, 114, 142],
+          [6, 34, 62, 90, 118, 146], [6, 30, 54, 78, 102, 126, 150],
+          [6, 24, 50, 76, 102, 128, 154], [6, 28, 54, 80, 106, 132, 158],
+          [6, 32, 58, 84, 110, 136, 162], [6, 26, 54, 82, 110, 138, 166],
+          [6, 30, 58, 86, 114, 142, 170]
+        ],
+        G15: (1 << 10) | (1 << 8) | (1 << 5) | (1 << 4) | (1 << 2) | (1 << 1) | (1 << 0),
+        G18: (1 << 12) | (1 << 11) | (1 << 10) | (1 << 9) | (1 << 8) | (1 << 5) | (1 << 2) | (1 << 0),
+        G15_MASK: (1 << 14) | (1 << 12) | (1 << 10) | (1 << 4) | (1 << 1),
+        getBCHTypeInfo: function(data) {
+          var d = data << 10;
+          while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15) >= 0) {
+            d ^= (QRUtil.G15 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G15)));
+          }
+          return ((data << 10) | d) ^ QRUtil.G15_MASK;
+        },
+        getBCHTypeNumber: function(data) {
+          var d = data << 12;
+          while (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18) >= 0) {
+            d ^= (QRUtil.G18 << (QRUtil.getBCHDigit(d) - QRUtil.getBCHDigit(QRUtil.G18)));
+          }
+          return (data << 12) | d;
+        },
+        getBCHDigit: function(data) {
+          var digit = 0;
+          while (data != 0) { digit++; data >>>= 1; }
+          return digit;
+        },
+        getPatternPosition: function(typeNumber) {
+          return QRUtil.PATTERN_POSITION_TABLE[typeNumber - 1];
+        },
+        getMask: function(maskPattern, i, j) {
+          switch (maskPattern) {
+            case QRMaskPattern.PATTERN000: return (i + j) % 2 == 0;
+            case QRMaskPattern.PATTERN001: return i % 2 == 0;
+            case QRMaskPattern.PATTERN010: return j % 3 == 0;
+            case QRMaskPattern.PATTERN011: return (i + j) % 3 == 0;
+            case QRMaskPattern.PATTERN100: return (Math.floor(i / 2) + Math.floor(j / 3)) % 2 == 0;
+            case QRMaskPattern.PATTERN101: return (i * j) % 2 + (i * j) % 3 == 0;
+            case QRMaskPattern.PATTERN110: return ((i * j) % 2 + (i * j) % 3) % 2 == 0;
+            case QRMaskPattern.PATTERN111: return ((i * j) % 3 + (i + j) % 2) % 2 == 0;
+            default: throw new Error("bad mask:" + maskPattern);
+          }
+        },
+        getLengthInBits: function(mode, type) {
+          if (1 <= type && type < 10) return 8;
+          return 16;
+        },
+        getLostPoint: function(qrCode) {
+          var moduleCount = qrCode.getModuleCount();
+          var lostPoint = 0;
+          for (var row = 0; row < moduleCount; row++) {
+            for (var col = 0; col < moduleCount; col++) {
+              var sameCount = 0;
+              var dark = qrCode.isDark(row, col);
+              for (var r = -1; r <= 1; r++) {
+                if (row + r < 0 || moduleCount <= row + r) continue;
+                for (var c = -1; c <= 1; c++) {
+                  if (col + c < 0 || moduleCount <= col + c) continue;
+                  if (r == 0 && c == 0) continue;
+                  if (dark == qrCode.isDark(row + r, col + c)) sameCount++;
+                }
+              }
+              if (sameCount > 5) lostPoint += (3 + sameCount - 5);
+            }
+          }
+          for (var row = 0; row < moduleCount - 1; row++) {
+            for (var col = 0; col < moduleCount - 1; col++) {
+              var count = 0;
+              if (qrCode.isDark(row, col)) count++;
+              if (qrCode.isDark(row + 1, col)) count++;
+              if (qrCode.isDark(row, col + 1)) count++;
+              if (qrCode.isDark(row + 1, col + 1)) count++;
+              if (count == 0 || count == 4) lostPoint += 3;
+            }
+          }
+          for (var row = 0; row < moduleCount; row++) {
+            for (var col = 0; col < moduleCount - 6; col++) {
+              if (qrCode.isDark(row, col) &&
+                !qrCode.isDark(row, col + 1) &&
+                qrCode.isDark(row, col + 2) &&
+                qrCode.isDark(row, col + 3) &&
+                qrCode.isDark(row, col + 4) &&
+                !qrCode.isDark(row, col + 5) &&
+                qrCode.isDark(row, col + 6)) lostPoint += 40;
+            }
+          }
+          for (var col = 0; col < moduleCount; col++) {
+            for (var row = 0; row < moduleCount - 6; row++) {
+              if (qrCode.isDark(row, col) &&
+                !qrCode.isDark(row + 1, col) &&
+                qrCode.isDark(row + 2, col) &&
+                qrCode.isDark(row + 3, col) &&
+                qrCode.isDark(row + 4, col) &&
+                !qrCode.isDark(row + 5, col) &&
+                qrCode.isDark(row + 6, col)) lostPoint += 40;
+            }
+          }
+          var darkCount = 0;
+          for (var col = 0; col < moduleCount; col++) {
+            for (var row = 0; row < moduleCount; row++) {
+              if (qrCode.isDark(row, col)) darkCount++;
+            }
+          }
+          var ratio = Math.abs(100 * darkCount / moduleCount / moduleCount - 50) / 5;
+          lostPoint += ratio * 10;
+          return lostPoint;
+        }
+      };
+
+      var QRMath = {
+        glog: function(n) {
+          if (n < 1) throw new Error("glog(" + n + ")");
+          return QRMath.LOG_TABLE[n];
+        },
+        gexp: function(n) {
+          while (n < 0) n += 255;
+          while (n >= 255) n -= 255;
+          return QRMath.EXP_TABLE[n];
+        },
+        EXP_TABLE: new Array(256),
+        LOG_TABLE: new Array(256)
+      };
+      for (var i = 0; i < 8; i++) QRMath.EXP_TABLE[i] = 1 << i;
+      for (var i = 8; i < 256; i++) QRMath.EXP_TABLE[i] = QRMath.EXP_TABLE[i - 4] ^ QRMath.EXP_TABLE[i - 5] ^ QRMath.EXP_TABLE[i - 6] ^ QRMath.EXP_TABLE[i - 8];
+      for (var i = 0; i < 255; i++) QRMath.LOG_TABLE[QRMath.EXP_TABLE[i]] = i;
+
+      function QRPolynomial(num, shift) {
+        var offset = 0;
+        while (offset < num.length && num[offset] === 0) offset++;
+        this.num = new Array(num.length - offset + shift);
+        for (var i = 0; i < num.length - offset; i++) this.num[i] = num[i + offset];
+      }
+      QRPolynomial.prototype = {
+        get: function(index) { return this.num[index]; },
+        getLength: function() { return this.num.length; },
+        multiply: function(e) {
+          var num = new Array(this.getLength() + e.getLength() - 1);
+          for (var i = 0; i < this.getLength(); i++) {
+            for (var j = 0; j < e.getLength(); j++) {
+              num[i + j] ^= QRMath.gexp(QRMath.glog(this.get(i)) + QRMath.glog(e.get(j)));
+            }
+          }
+          return new QRPolynomial(num, 0);
+        },
+        mod: function(e) {
+          if (this.getLength() - e.getLength() < 0) return this;
+          var ratio = QRMath.glog(this.get(0)) - QRMath.glog(e.get(0));
+          var num = new Array(this.getLength());
+          for (var i = 0; i < this.getLength(); i++) num[i] = this.get(i);
+          for (var i = 0; i < e.getLength(); i++) num[i] ^= QRMath.gexp(QRMath.glog(e.get(i)) + ratio);
+          return new QRPolynomial(num, 0).mod(e);
+        }
+      };
+
+      function QRRSBlock(totalCount, dataCount) {
+        this.totalCount = totalCount;
+        this.dataCount = dataCount;
+      }
+      QRRSBlock.RS_BLOCK_TABLE = [
+        [1, 26, 19], [1, 26, 16], [1, 26, 13], [1, 26, 9],
+        [1, 44, 34], [1, 44, 28], [1, 44, 22], [1, 44, 16],
+        [1, 70, 55], [1, 70, 44], [2, 35, 17], [2, 35, 13],
+        [1, 100, 80], [2, 50, 32], [2, 50, 24], [4, 25, 9],
+        [1, 134, 108], [2, 67, 43], [2, 33, 15, 2, 34, 16], [2, 33, 11, 2, 34, 12],
+        [2, 86, 68], [4, 43, 27], [4, 43, 19], [4, 43, 15],
+        [2, 98, 78], [4, 49, 31], [2, 32, 14, 4, 33, 15], [4, 39, 13, 1, 40, 14],
+        [2, 121, 97], [2, 60, 38, 2, 61, 39], [4, 40, 18, 2, 41, 19], [4, 40, 14, 2, 41, 15],
+        [2, 146, 116], [3, 58, 36, 2, 59, 37], [4, 36, 16, 4, 37, 17], [4, 36, 12, 4, 37, 13],
+        [2, 86, 68, 2, 87, 69], [4, 69, 43, 1, 70, 44], [6, 43, 19, 2, 44, 20], [6, 43, 15, 2, 44, 16],
+        [4, 101, 81], [1, 80, 50, 4, 81, 51], [4, 50, 22, 4, 51, 23], [3, 36, 12, 8, 37, 13],
+        [2, 116, 92, 2, 117, 93], [6, 58, 36, 2, 59, 37], [4, 46, 20, 6, 47, 21], [7, 42, 14, 4, 43, 15],
+        [4, 133, 107], [8, 59, 37, 1, 60, 38], [8, 44, 20, 4, 45, 21], [12, 33, 11, 4, 34, 12],
+        [3, 145, 115, 1, 146, 116], [4, 64, 40, 5, 65, 41], [11, 36, 16, 5, 37, 17], [11, 36, 12, 5, 37, 13],
+        [5, 109, 87, 1, 110, 88], [5, 65, 41, 5, 66, 42], [5, 54, 24, 7, 55, 25], [11, 36, 12, 7, 37, 13],
+        [5, 122, 98, 1, 123, 99], [7, 73, 45, 3, 74, 46], [15, 43, 19, 2, 44, 20], [3, 45, 15, 13, 46, 16],
+        [1, 135, 107, 5, 136, 108], [10, 74, 46, 1, 75, 47], [1, 50, 22, 15, 51, 23], [2, 42, 14, 17, 43, 15],
+        [5, 150, 120, 1, 151, 121], [9, 69, 43, 4, 70, 44], [17, 50, 22, 1, 51, 23], [2, 42, 14, 19, 43, 15],
+        [3, 141, 113, 4, 142, 114], [3, 70, 44, 11, 71, 45], [17, 47, 21, 4, 48, 22], [9, 39, 13, 16, 40, 14],
+        [3, 135, 107, 5, 136, 108], [3, 67, 41, 13, 68, 42], [15, 54, 24, 5, 55, 25], [15, 43, 15, 10, 44, 16],
+        [4, 144, 116, 4, 145, 117], [17, 68, 42], [17, 50, 22, 6, 51, 23], [19, 46, 16, 6, 47, 17],
+        [2, 139, 111, 7, 140, 112], [17, 74, 46], [7, 54, 24, 16, 55, 25], [34, 37, 13],
+        [4, 151, 121, 5, 152, 122], [4, 75, 47, 14, 76, 48], [11, 54, 24, 14, 55, 25], [16, 45, 15, 14, 46, 16],
+        [6, 147, 117, 4, 148, 118], [6, 73, 45, 14, 74, 46], [11, 54, 24, 16, 55, 25], [30, 46, 16, 2, 47, 17],
+        [8, 132, 106, 4, 133, 107], [8, 75, 47, 13, 76, 48], [7, 54, 24, 22, 55, 25], [22, 45, 15, 13, 46, 16],
+        [10, 142, 114, 2, 143, 115], [19, 74, 46, 4, 75, 47], [28, 50, 22, 6, 51, 23], [33, 46, 16, 4, 47, 17],
+        [8, 152, 122, 4, 153, 123], [22, 73, 45, 3, 74, 46], [8, 53, 23, 26, 54, 24], [12, 45, 15, 28, 46, 16],
+        [3, 147, 117, 10, 148, 118], [3, 73, 45, 23, 74, 46], [4, 54, 24, 31, 55, 25], [11, 45, 15, 31, 46, 16],
+        [7, 146, 116, 7, 147, 117], [21, 73, 45, 7, 74, 46], [1, 53, 23, 37, 54, 24], [19, 45, 15, 26, 46, 16],
+        [5, 145, 115, 10, 146, 116], [19, 75, 47, 10, 76, 48], [15, 54, 24, 25, 55, 25], [23, 45, 15, 25, 46, 16],
+        [13, 145, 115, 3, 146, 116], [2, 74, 46, 29, 75, 47], [42, 54, 24, 1, 55, 25], [23, 45, 15, 28, 46, 16],
+        [17, 145, 115], [10, 74, 46, 23, 75, 47], [10, 54, 24, 35, 55, 25], [19, 45, 15, 35, 46, 16],
+        [17, 145, 115, 1, 146, 116], [14, 74, 46, 21, 75, 47], [29, 54, 24, 19, 55, 25], [11, 45, 15, 46, 46, 16],
+        [13, 145, 115, 6, 146, 116], [14, 74, 46, 23, 75, 47], [44, 54, 24, 7, 55, 25], [59, 46, 16, 1, 47, 17],
+        [12, 151, 121, 7, 152, 122], [12, 75, 47, 26, 76, 48], [39, 54, 24, 14, 55, 25], [22, 45, 15, 41, 46, 16],
+        [6, 151, 121, 14, 152, 122], [6, 75, 47, 34, 76, 48], [46, 54, 24, 10, 55, 25], [2, 45, 15, 64, 46, 16],
+        [17, 152, 122, 4, 153, 123], [29, 74, 46, 14, 75, 47], [49, 54, 24, 10, 55, 25], [24, 45, 15, 46, 46, 16],
+        [4, 152, 122, 18, 153, 123], [13, 74, 46, 32, 75, 47], [48, 54, 24, 14, 55, 25], [42, 45, 15, 32, 46, 16],
+        [20, 147, 117, 4, 148, 118], [40, 75, 47, 7, 76, 48], [43, 54, 24, 22, 55, 25], [10, 45, 15, 67, 46, 16],
+        [19, 148, 118, 6, 149, 119], [18, 75, 47, 31, 76, 48], [34, 54, 24, 34, 55, 25], [20, 45, 15, 61, 46, 16]
+      ];
+      QRRSBlock.getRSBlocks = function(typeNumber, errorCorrectionLevel) {
+        var rsBlock = QRRSBlock.RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0]; // default Level L
+        var length = rsBlock.length / 3;
+        var list = [];
+        for (var i = 0; i < length; i++) {
+          var count = rsBlock[i * 3 + 0];
+          var totalCount = rsBlock[i * 3 + 1];
+          var dataCount = rsBlock[i * 3 + 2];
+          for (var j = 0; j < count; j++) list.push(new QRRSBlock(totalCount, dataCount));
+        }
+        return list;
+      };
+
+      function QRBitBuffer() {
+        this.buffer = [];
+        this.length = 0;
+      }
+      QRBitBuffer.prototype = {
+        get: function(index) {
+          var bufIndex = Math.floor(index / 8);
+          return ((this.buffer[bufIndex] >>> (7 - index % 8)) & 1) == 1;
+        },
+        put: function(num, length) {
+          for (var i = 0; i < length; i++) this.putBit(((num >>> (length - i - 1)) & 1) == 1);
+        },
+        getLengthInBits: function() { return this.length; },
+        putBit: function(bit) {
+          var bufIndex = Math.floor(this.length / 8);
+          if (this.buffer.length <= bufIndex) this.buffer.push(0);
+          if (bit) this.buffer[bufIndex] |= (0x80 >>> (this.length % 8));
+          this.length++;
+        }
+      };
+
+      function QR8bitByte(data) {
+        this.mode = QRMode.MODE_8BIT_BYTE;
+        this.data = data;
+        this.parsedData = [];
+        for (var i = 0; i < this.data.length; i++) {
+          var c = this.data.charCodeAt(i);
+          if (c < 0x80) {
+            this.parsedData.push(c);
+          } else if (c < 0x800) {
+            this.parsedData.push(0xc0 | (c >> 6), 0x80 | (c & 0x3f));
+          } else if (c < 0xd800 || c >= 0xe000) {
+            this.parsedData.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));
+          } else {
+            i++;
+            c = 0x10000 + (((c & 0x3ff) << 10) | (this.data.charCodeAt(i) & 0x3ff));
+            this.parsedData.push(0xf0 | (c >> 18), 0x80 | ((c >> 12) & 0x3f), 0x80 | ((c >> 6) & 0x3f), 0x80 | (c & 0x3f));
+          }
+        }
+      }
+      QR8bitByte.prototype = {
+        getLength: function() { return this.parsedData.length; },
+        write: function(buffer) {
+          for (var i = 0; i < this.parsedData.length; i++) buffer.put(this.parsedData[i], 8);
+        }
+      };
+
+      QRCodeModel.prototype = {
+        addData: function(data) {
+          var newData = new QR8bitByte(data);
+          this.dataList.push(newData);
+          this.dataCache = null;
+        },
+        isDark: function(row, col) { return this.modules[row][col]; },
+        getModuleCount: function() { return this.moduleCount; },
+        make: function() {
+          var typeNumber = 1;
+          for (typeNumber = 1; typeNumber <= 40; typeNumber++) {
+            var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, 1);
+            var totalDataCount = 0;
+            for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+            var totalBits = 0;
+            for (var i = 0; i < this.dataList.length; i++) {
+              var data = this.dataList[i];
+              totalBits += 4;
+              totalBits += QRUtil.getLengthInBits(data.mode, typeNumber);
+              totalBits += data.getLength() * 8;
+            }
+            if (totalBits <= totalDataCount * 8) break;
+          }
+          this.typeNumber = Math.min(typeNumber, 40);
+          this.makeImpl(false, this.getBestMaskPattern());
+        },
+        makeImpl: function(test, maskPattern) {
+          this.moduleCount = this.typeNumber * 4 + 17;
+          this.modules = new Array(this.moduleCount);
+          for (var row = 0; row < this.moduleCount; row++) {
+            this.modules[row] = new Array(this.moduleCount);
+            for (var col = 0; col < this.moduleCount; col++) this.modules[row][col] = null;
+          }
+          this.setupPositionProbePattern(0, 0);
+          this.setupPositionProbePattern(this.moduleCount - 7, 0);
+          this.setupPositionProbePattern(0, this.moduleCount - 7);
+          this.setupPositionAdjustPattern();
+          this.setupTimingPattern();
+          this.setupTypeInfo(test, maskPattern);
+          if (this.typeNumber >= 7) this.setupTypeNumber(test);
+          if (this.dataCache == null) this.dataCache = QRCodeModel.createData(this.typeNumber, 1, this.dataList);
+          this.mapData(this.dataCache, maskPattern);
+        },
+        setupPositionProbePattern: function(row, col) {
+          for (var r = -1; r <= 7; r++) {
+            if (row + r <= -1 || this.moduleCount <= row + r) continue;
+            for (var c = -1; c <= 7; c++) {
+              if (col + c <= -1 || this.moduleCount <= col + c) continue;
+              if ((0 <= r && r <= 6 && (c == 0 || c == 6)) ||
+                (0 <= c && c <= 6 && (r == 0 || r == 6)) ||
+                (2 <= r && r <= 4 && 2 <= c && c <= 4)) {
+                this.modules[row + r][col + c] = true;
+              } else {
+                this.modules[row + r][col + c] = false;
+              }
+            }
+          }
+        },
+        getBestMaskPattern: function() {
+          var minLostPoint = 0;
+          var pattern = 0;
+          for (var i = 0; i < 8; i++) {
+            this.makeImpl(true, i);
+            var lostPoint = QRUtil.getLostPoint(this);
+            if (i == 0 || minLostPoint > lostPoint) {
+              minLostPoint = lostPoint;
+              pattern = i;
+            }
+          }
+          return pattern;
+        },
+        setupTimingPattern: function() {
+          for (var r = 8; r < this.moduleCount - 8; r++) {
+            if (this.modules[r][6] != null) continue;
+            this.modules[r][6] = (r % 2 == 0);
+          }
+          for (var c = 8; c < this.moduleCount - 8; c++) {
+            if (this.modules[6][c] != null) continue;
+            this.modules[6][c] = (c % 2 == 0);
+          }
+        },
+        setupPositionAdjustPattern: function() {
+          var pos = QRUtil.getPatternPosition(this.typeNumber);
+          for (var i = 0; i < pos.length; i++) {
+            for (var j = 0; j < pos.length; j++) {
+              var row = pos[i];
+              var col = pos[j];
+              if (this.modules[row][col] != null) continue;
+              for (var r = -2; r <= 2; r++) {
+                for (var c = -2; c <= 2; c++) {
+                  if (r == -2 || r == 2 || c == -2 || c == 2 || (r == 0 && c == 0)) {
+                    this.modules[row + r][col + c] = true;
+                  } else {
+                    this.modules[row + r][col + c] = false;
+                  }
+                }
+              }
+            }
+          }
+        },
+        setupTypeNumber: function(test) {
+          var bits = QRUtil.getBCHTypeNumber(this.typeNumber);
+          for (var i = 0; i < 18; i++) {
+            var mod = (!test && ((bits >> i) & 1) == 1);
+            this.modules[Math.floor(i / 3)][i % 3 + this.moduleCount - 8 - 3] = mod;
+            this.modules[i % 3 + this.moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
+          }
+        },
+        setupTypeInfo: function(test, maskPattern) {
+          var data = (1 << 3) | maskPattern;
+          var bits = QRUtil.getBCHTypeInfo(data);
+          for (var i = 0; i < 15; i++) {
+            var mod = (!test && ((bits >> i) & 1) == 1);
+            if (i < 6) this.modules[i][8] = mod;
+            else if (i < 8) this.modules[i + 1][8] = mod;
+            else this.modules[this.moduleCount - 15 + i][8] = mod;
+          }
+          for (var i = 0; i < 15; i++) {
+            var mod = (!test && ((bits >> i) & 1) == 1);
+            if (i < 8) this.modules[8][this.moduleCount - i - 1] = mod;
+            else if (i < 9) this.modules[8][15 - i - 1 + 1] = mod;
+            else this.modules[8][15 - i - 1] = mod;
+          }
+          this.modules[this.moduleCount - 8][8] = (!test);
+        },
+        mapData: function(data, maskPattern) {
+          var inc = -1;
+          var row = this.moduleCount - 1;
+          var bitIndex = 7;
+          var byteIndex = 0;
+          for (var col = this.moduleCount - 1; col > 0; col -= 2) {
+            if (col == 6) col--;
+            while (true) {
+              for (var c = 0; c < 2; c++) {
+                if (this.modules[row][col - c] == null) {
+                  var dark = false;
+                  if (byteIndex < data.length) dark = (((data[byteIndex] >>> bitIndex) & 1) == 1);
+                  var mask = QRUtil.getMask(maskPattern, row, col - c);
+                  if (mask) dark = !dark;
+                  this.modules[row][col - c] = dark;
+                  bitIndex--;
+                  if (bitIndex == -1) {
+                    byteIndex++;
+                    bitIndex = 7;
+                  }
+                }
+              }
+              row += inc;
+              if (row < 0 || this.moduleCount <= row) {
+                row -= inc;
+                inc = -inc;
+                break;
+              }
+            }
+          }
+        }
+      };
+
+      QRCodeModel.createData = function(typeNumber, errorCorrectionLevel, dataList) {
+        var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, 1);
+        var buffer = new QRBitBuffer();
+        for (var i = 0; i < dataList.length; i++) {
+          var data = dataList[i];
+          buffer.put(data.mode, 4);
+          buffer.put(data.getLength(), QRUtil.getLengthInBits(data.mode, typeNumber));
+          data.write(buffer);
+        }
+        var totalDataCount = 0;
+        for (var i = 0; i < rsBlocks.length; i++) totalDataCount += rsBlocks[i].dataCount;
+        if (buffer.getLengthInBits() > totalDataCount * 8) throw new Error("Data overflow for QR version " + typeNumber);
+        if (buffer.getLengthInBits() + 4 <= totalDataCount * 8) buffer.put(0, 4);
+        while (buffer.getLengthInBits() % 8 != 0) buffer.putBit(false);
+        while (true) {
+          if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+          buffer.put(0xEC, 8);
+          if (buffer.getLengthInBits() >= totalDataCount * 8) break;
+          buffer.put(0x11, 8);
+        }
+        return QRCodeModel.createBytes(buffer, rsBlocks);
+      };
+
+      QRCodeModel.createBytes = function(buffer, rsBlocks) {
+        var offset = 0;
+        var maxDcCount = 0;
+        var maxEcCount = 0;
+        var dcdata = new Array(rsBlocks.length);
+        var ecdata = new Array(rsBlocks.length);
+        for (var r = 0; r < rsBlocks.length; r++) {
+          var dcCount = rsBlocks[r].dataCount;
+          var ecCount = rsBlocks[r].totalCount - dcCount;
+          maxDcCount = Math.max(maxDcCount, dcCount);
+          maxEcCount = Math.max(maxEcCount, ecCount);
+          dcdata[r] = new Array(dcCount);
+          for (var i = 0; i < dcdata[r].length; i++) dcdata[r][i] = 0xff & buffer.buffer[i + offset];
+          offset += dcCount;
+          var rsPoly = QRUtil.getErrorCorrectPolynomial(ecCount);
+          var rawPoly = new QRPolynomial(dcdata[r], rsPoly.getLength() - 1);
+          var modPoly = rawPoly.mod(rsPoly);
+          ecdata[r] = new Array(rsPoly.getLength() - 1);
+          for (var i = 0; i < ecdata[r].length; i++) {
+            var modIndex = i + modPoly.getLength() - ecdata[r].length;
+            ecdata[r][i] = (modIndex >= 0) ? modPoly.get(modIndex) : 0;
+          }
+        }
+        var totalCodeCount = 0;
+        for (var i = 0; i < rsBlocks.length; i++) totalCodeCount += rsBlocks[i].totalCount;
+        var data = new Array(totalCodeCount);
+        var index = 0;
+        for (var i = 0; i < maxDcCount; i++) {
+          for (var r = 0; r < rsBlocks.length; r++) {
+            if (i < dcdata[r].length) data[index++] = dcdata[r][i];
+          }
+        }
+        for (var i = 0; i < maxEcCount; i++) {
+          for (var r = 0; r < rsBlocks.length; r++) {
+            if (i < ecdata[r].length) data[index++] = ecdata[r][i];
+          }
+        }
+        return data;
+      };
+
+      QRUtil.getErrorCorrectPolynomial = function(errorCorrectLength) {
+        var a = new QRPolynomial([1], 0);
+        for (var i = 0; i < errorCorrectLength; i++) {
+          a = a.multiply(new QRPolynomial([1, QRMath.gexp(i)], 0));
+        }
+        return a;
+      };
+
+      // Draw high-contrast QR on Canvas via direct 32-bit pixel memory blitting
+      exports.renderQR = function(containerEl, text) {
+        var qr = new QRCodeModel(0, 1);
+        qr.addData(text);
+        qr.make();
+        var count = qr.getModuleCount();
+
+        var canvas = document.createElement('canvas');
+        var size = Math.max(260, count * 4);
+        canvas.width = size;
+        canvas.height = size;
+        var ctx = canvas.getContext('2d');
+
+        var margin = 2;
+        var cellSize = Math.floor((size - margin * 2) / count);
+        var startX = Math.floor((size - cellSize * count) / 2);
+        var startY = Math.floor((size - cellSize * count) / 2);
+
+        // Hardware-fast direct 32-bit pixel blit (bypasses thousands of fillRect draw calls)
+        var imgData = ctx.createImageData(size, size);
+        var buf32 = new Uint32Array(imgData.data.buffer);
+        buf32.fill(0xFFFFFFFF); // White (0xFF Alpha, 0xFF Blue, 0xFF Green, 0xFF Red)
+
+        for (var r = 0; r < count; r++) {
+          for (var c = 0; c < count; c++) {
+            if (qr.isDark(r, c)) {
+              var px = startX + c * cellSize;
+              var py = startY + r * cellSize;
+              for (var y = 0; y < cellSize; y++) {
+                var rowStart = (py + y) * size + px;
+                for (var x = 0; x < cellSize; x++) {
+                  buf32[rowStart + x] = 0xFF000000; // Black (0xFF Alpha, 0x00 RGB)
+                }
+              }
+            }
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+        containerEl.innerHTML = '';
+        containerEl.appendChild(canvas);
+      };
+
+    })(window.QR = {});
+  </script>
+
+  <!-- ==========================================================================
+       MAIN CLIENT APPLICATION LOGIC (Vanilla JavaScript)
+       ========================================================================== -->
+  <script>
+    // State management
+    let peerConnection = null;
+    let dataChannel = null;
+    let currentRole = 'A'; // 'A' = Initiator, 'B' = Joiner
+    let localSDP = '';
+    let remoteSDP = '';
+    let isConnected = false;
+    let rttStart = 0;
+
+    // File transfer streaming state
+    const CHUNK_SIZE = 64 * 1024; // 64KB chunk unit
+    let transferCancelled = false;
+    let isSending = false;
+    let isReceiving = false;
+    let currentActiveFile = null; // for receiver
+    const receivedFiles = [];
+
+    // FTP / Shared Library state
+    const mySharedFilesMap = new Map(); // id -> { id, file, name, size, type }
+    let peerCatalog = []; // array of { id, name, size, type }
+    let currentTransferMode = 'direct'; // 'direct' | 'browse' | 'share'
+    const outgoingQueue = [];
+    let isProcessingQueue = false;
+
+    // Camera scanner state
+    let scannerStream = null;
+    let scannerAnimFrame = null;
+    let activeScannerTarget = null; // 'offer' or 'answer'
+    let currentCameraFacing = 'environment'; // or 'user'
+
+    // DOM Elements
+    const connectionBadge = document.getElementById('connection-badge');
+    const connectionStatusText = document.getElementById('connection-status-text');
+    const pairingWizard = document.getElementById('pairing-wizard');
+    const transferInterface = document.getElementById('transfer-interface');
+    const toastEl = document.getElementById('toast');
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const activeTransferCard = document.getElementById('active-transfer-card');
+    const receivedFilesContainer = document.getElementById('received-files-container');
+    const receivedCountEl = document.getElementById('received-count');
+    const emptyFilesMsg = document.getElementById('empty-files-msg');
+    const chatLog = document.getElementById('chat-log');
+    const chatInput = document.getElementById('chat-input');
+    const latencyMeter = document.getElementById('latency-meter');
+    const autoDownloadToggle = document.getElementById('auto-download-toggle');
+
+    // Transfer mode DOM elements
+    const tabModeDirect = document.getElementById('tab-mode-direct');
+    const tabModeBrowse = document.getElementById('tab-mode-browse');
+    const tabModeShare = document.getElementById('tab-mode-share');
+    const viewModeDirect = document.getElementById('view-mode-direct');
+    const viewModeBrowse = document.getElementById('view-mode-browse');
+    const viewModeShare = document.getElementById('view-mode-share');
+    const peerSharedCountEl = document.getElementById('peer-shared-count');
+    const badgePeerCountEl = document.getElementById('badge-peer-count');
+    const mySharedCountEl = document.getElementById('my-shared-count');
+    const badgeMyCountEl = document.getElementById('badge-my-count');
+    const peerFilesEmptyMsg = document.getElementById('peer-files-empty-msg');
+    const peerFilesContainer = document.getElementById('peer-files-container');
+    const myFilesEmptyMsg = document.getElementById('my-files-empty-msg');
+    const mySharedFilesContainer = document.getElementById('my-shared-files-container');
+    const shareFileInput = document.getElementById('share-file-input');
+    const shareFolderInput = document.getElementById('share-folder-input');
+    const btnDownloadAllPeer = document.getElementById('btn-download-all-peer');
+
+    // Stats Elements
+    const statSpeed = document.getElementById('stat-speed');
+    const statBytes = document.getElementById('stat-bytes');
+    const statEta = document.getElementById('stat-eta');
+    const statBuffer = document.getElementById('stat-buffer');
+    const statCrc = document.getElementById('stat-crc');
+    const statStorageMode = document.getElementById('stat-storage-mode');
+    const transferProgressFill = document.getElementById('transfer-progress-fill');
+    const transferProgressAscii = document.getElementById('transfer-progress-ascii');
+    const transferChunkStat = document.getElementById('transfer-chunk-stat');
+    const transferDirectionBadge = document.getElementById('transfer-direction-badge');
+    const transferFileName = document.getElementById('transfer-file-name');
+
+    // Diagnostics Elements
+    const dcStateText = document.getElementById('dc-state-text');
+    const iceStateText = document.getElementById('ice-state-text');
+    const diagGathering = document.getElementById('diag-gathering');
+    const diagSignaling = document.getElementById('diag-signaling');
+    const diagCandidates = document.getElementById('diag-candidates');
+
+    let candidatesCount = 0;
+
+    /* --------------------------------------------------------------------------
+       HARDCORE LOGIC & MATH ENGINE: BITWISE CRC32, SPEED FILTER & MEMORY PIPELINE
+       -------------------------------------------------------------------------- */
+
+    // 1. Bitwise IEEE 802.3 CRC32 Hardware-style Engine (Precomputed 256-entry table)
+    const CRC32 = (() => {
+      const table = new Uint32Array(256);
+      for (let i = 0; i < 256; i++) {
+        let c = i;
+        for (let k = 0; k < 8; k++) {
+          c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+        }
+        table[i] = c >>> 0;
+      }
+      return {
+        calculate: (uint8Array, seed = 0xFFFFFFFF) => {
+          let c = seed;
+          const len = uint8Array.length;
+          for (let i = 0; i < len; i++) {
+            c = table[(c ^ uint8Array[i]) & 0xFF] ^ (c >>> 8);
+          }
+          return (c ^ 0xFFFFFFFF) >>> 0;
+        },
+        updateSeed: (uint8Array, seed = 0xFFFFFFFF) => {
+          let c = seed;
+          const len = uint8Array.length;
+          for (let i = 0; i < len; i++) {
+            c = table[(c ^ uint8Array[i]) & 0xFF] ^ (c >>> 8);
+          }
+          return c;
+        },
+        hex: (num) => '0x' + (num >>> 0).toString(16).toUpperCase().padStart(8, '0')
+      };
+    })();
+
+    // 2. Exponential Moving Average (EMA) Speed Filter for jitter-free throughput
+    class SpeedFilter {
+      constructor(alpha = 0.28) {
+        this.alpha = alpha;
+        this.emaSpeed = 0;
+        this.lastTime = 0;
+        this.lastBytes = 0;
+      }
+      reset() {
+        this.emaSpeed = 0;
+        this.lastTime = performance.now();
+        this.lastBytes = 0;
+      }
+      update(currentBytes) {
+        const now = performance.now();
+        if (this.lastTime === 0) {
+          this.lastTime = now;
+          this.lastBytes = currentBytes;
+          return 0;
+        }
+        const dt = (now - this.lastTime) / 1000;
+        if (dt < 0.05) return this.emaSpeed;
+        const instantSpeed = (currentBytes - this.lastBytes) / dt;
+        if (this.emaSpeed === 0) {
+          this.emaSpeed = instantSpeed;
+        } else {
+          this.emaSpeed = (this.alpha * instantSpeed) + ((1 - this.alpha) * this.emaSpeed);
+        }
+        this.lastTime = now;
+        this.lastBytes = currentBytes;
+        return this.emaSpeed;
+      }
+    }
+
+    // 3. Stealth Privacy Guard: Binary EXIF & Metadata Stripper for JPEG images
+    function stripJpegExif(arrayBuffer) {
+      try {
+        const view = new DataView(arrayBuffer);
+        // Validate JPEG SOI (0xFFD8)
+        if (view.byteLength < 4 || view.getUint16(0) !== 0xFFD8) return arrayBuffer;
+        let offset = 2;
+        const totalLen = arrayBuffer.byteLength;
+        const chunks = [new Uint8Array(arrayBuffer, 0, 2)]; // Keep SOI
+
+        while (offset < totalLen - 4) {
+          if (view.getUint8(offset) !== 0xFF) break;
+          const marker = view.getUint8(offset + 1);
+          // 0xFFDA is SOS (Start of Scan - image data starts here until EOI)
+          if (marker === 0xDA) {
+            chunks.push(new Uint8Array(arrayBuffer, offset));
+            break;
+          }
+          const markerLength = view.getUint16(offset + 2);
+          // Strip APP1 through APP15 (0xE1..0xEF) which hold EXIF, GPS, author info, camera serials
+          if (marker >= 0xE1 && marker <= 0xEF) {
+            // Segment skipped
+          } else {
+            chunks.push(new Uint8Array(arrayBuffer, offset, markerLength + 2));
+          }
+          offset += 2 + markerLength;
+        }
+        return new Blob(chunks, { type: 'image/jpeg' });
+      } catch (err) {
+        console.warn('EXIF strip fallback:', err);
+        return arrayBuffer;
+      }
+    }
+
+    // 4. SDP Sanitizer & Minifier: Preserves vital BUNDLE and SCTP headers while cleaning redundant noise
+    function minifyAndAnonymizeSDP(rawSDP) {
+      if (!document.getElementById('opt-anonymize-sdp')?.checked) {
+        return rawSDP;
+      }
+      const lines = rawSDP.split(/\r\n|\n/);
+      const kept = [];
+      for (let rawLine of lines) {
+        const line = rawLine.trim();
+        if (!line) continue;
+
+        // Anonymize session origin
+        if (line.startsWith('o=')) {
+          kept.push('o=- 1000 2 IN IP4 127.0.0.1');
+          continue;
+        }
+        // Essential session attributes
+        if (line.startsWith('v=') || line.startsWith('s=') || line.startsWith('t=') || line.startsWith('c=')) {
+          kept.push(line);
+          continue;
+        }
+        // CRITICAL WebRTC attributes: BUNDLE is required by browsers for SCTP DataChannel multiplexing!
+        if (line.startsWith('a=group:BUNDLE') ||
+            line.startsWith('a=msid-semantic:') ||
+            line.startsWith('a=ice-options:') ||
+            line.startsWith('a=end-of-candidates')) {
+          kept.push(line);
+          continue;
+        }
+        // Essential DataChannel / SCTP / DTLS configuration
+        if (line.startsWith('m=application') ||
+            line.startsWith('a=mid:') ||
+            line.startsWith('a=sctp-port:') ||
+            line.startsWith('a=max-message-size:') ||
+            line.startsWith('a=setup:') ||
+            line.startsWith('a=ice-ufrag:') ||
+            line.startsWith('a=ice-pwd:') ||
+            line.startsWith('a=fingerprint:')) {
+          kept.push(line);
+          continue;
+        }
+        // Keep ICE candidates so peers can reach each other across LAN or NAT
+        if (line.startsWith('a=candidate:')) {
+          kept.push(line);
+        }
+      }
+      return kept.join('\r\n') + '\r\n';
+    }
+
+    // 5. Origin Private File System (OPFS) Zero-RAM Stream Manager with Memory Fallback
+    async function createOpfsStream(fileId, totalBytes) {
+      if (navigator.storage && navigator.storage.getDirectory) {
+        try {
+          const root = await navigator.storage.getDirectory();
+          const p2pDir = await root.getDirectoryHandle('p2p_cache', { create: true });
+          const fileHandle = await p2pDir.getFileHandle(`stream_${fileId}.bin`, { create: true });
+          const writable = await fileHandle.createWritable();
+          return {
+            isOpfs: true,
+            fileHandle,
+            writable,
+            writeChunk: async (chunkBuf) => {
+              await writable.write(chunkBuf);
+            },
+            finalize: async (mime) => {
+              await writable.close();
+              const rawFile = await fileHandle.getFile();
+              return new Blob([rawFile], { type: mime });
+            },
+            cleanup: async () => {
+              try {
+                await p2pDir.removeEntry(`stream_${fileId}.bin`);
+              } catch(e) {}
+            }
+          };
+        } catch (e) {
+          console.warn('OPFS stream init fallback to RAM buffers:', e);
+        }
+      }
+
+      // Memory Buffer Fallback with explicit zeroizing support
+      return {
+        isOpfs: false,
+        chunks: [],
+        writeChunk: function(chunkBuf, idx) {
+          this.chunks[idx] = chunkBuf;
+        },
+        finalize: function(mime) {
+          return new Blob(this.chunks, { type: mime });
+        },
+        cleanup: function() {
+          for (let i = 0; i < this.chunks.length; i++) {
+            if (this.chunks[i] && this.chunks[i].byteLength) {
+              new Uint8Array(this.chunks[i]).fill(0);
+            }
+          }
+          this.chunks.length = 0;
+        }
+      };
+    }
+
+    /* --------------------------------------------------------------------------
+       SDP Compression & Decompression (Deflate-Raw + Base64)
+       -------------------------------------------------------------------------- */
+    async function compressSDP(rawSDP) {
+      try {
+        if (window.CompressionStream) {
+          const stream = new Blob([rawSDP]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+          const resp = new Response(stream);
+          const buf = await resp.arrayBuffer();
+          const bytes = new Uint8Array(buf);
+          let binary = '';
+          for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+          return 'Z:' + btoa(binary);
+        }
+      } catch (e) {
+        console.warn('CompressionStream fallback:', e);
+      }
+      return rawSDP;
+    }
+
+    async function decompressSDP(inputStr) {
+      let clean = inputStr.trim();
+      if (clean.startsWith('Z:')) {
+        clean = clean.slice(2);
+      }
+      try {
+        const binary = atob(clean);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        if (window.DecompressionStream) {
+          const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+          const resp = new Response(stream);
+          return await resp.text();
+        }
+      } catch (e) {
+        // Fallback if already raw uncompressed SDP
+      }
+      return inputStr.trim();
+    }
+
+    /* --------------------------------------------------------------------------
+       UI Utilities
+       -------------------------------------------------------------------------- */
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      setTimeout(() => toastEl.classList.remove('show'), 2600);
+    }
+
+    function formatBytes(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return (bytes / Math.pow(k, i)).toFixed(1) + ' ' + sizes[i];
+    }
+
+    function formatDuration(sec) {
+      if (!isFinite(sec) || sec < 0) return '--:--';
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+    }
+
+    function toggleRawBox(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        const isHidden = window.getComputedStyle(el).display === 'none' || el.style.display === 'none';
+        el.style.display = isHidden ? 'flex' : 'none';
+      }
+    }
+
+    function openSettingsModal() {
+      const modal = document.getElementById('settings-modal');
+      if (modal) {
+        modal.classList.add('open');
+        modal.style.display = 'flex';
+      }
+    }
+
+    function closeSettingsModal() {
+      const modal = document.getElementById('settings-modal');
+      if (modal) {
+        modal.classList.remove('open');
+        modal.style.display = 'none';
+      }
+    }
+
+    function toggleSettingsModal(force) {
+      const modal = document.getElementById('settings-modal');
+      if (modal) {
+        const isCurrentlyOpen = modal.classList.contains('open') || modal.style.display === 'flex';
+        const shouldOpen = typeof force === 'boolean' ? force : !isCurrentlyOpen;
+        if (shouldOpen) {
+          openSettingsModal();
+        } else {
+          closeSettingsModal();
+        }
+      }
+    }
+
+    function toggleDiagnostics() {
+      const p = document.getElementById('diagnostics-panel');
+      p.classList.toggle('open');
+    }
+
+    function switchRole(role) {
+      currentRole = role;
+      document.getElementById('tab-role-a').classList.toggle('active', role === 'A');
+      document.getElementById('tab-role-b').classList.toggle('active', role === 'B');
+      document.getElementById('flow-initiator').style.display = role === 'A' ? 'flex' : 'none';
+      document.getElementById('flow-joiner').style.display = role === 'B' ? 'flex' : 'none';
+    }
+
+    async function pasteFromClipboard(targetInputId) {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          const target = document.getElementById(targetInputId);
+          target.value = text.trim();
+          showToast('PASTED FROM CLIPBOARD');
+        }
+      } catch (err) {
+        showToast('PLEASE PASTE MANUALLY (CTRL+V)');
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       WebRTC Core Initialization
+       -------------------------------------------------------------------------- */
+    function createPeerConnection() {
+      if (peerConnection) {
+        try { peerConnection.close(); } catch(e) {}
+      }
+
+      candidatesCount = 0;
+      localSDP = '';
+      remoteSDP = '';
+      updateDiagnostics();
+
+      // Standard public STUN servers for network route discovery across LAN, Wi-Fi & Hotspots.
+      // (STUN carries 0 bytes of user file data; if offline, queries simply time out harmlessly).
+      const config = {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun.cloudflare.com:3478' }
+        ]
+      };
+      peerConnection = new RTCPeerConnection(config);
+
+      peerConnection.onicecandidate = (e) => {
+        if (e.candidate) {
+          candidatesCount++;
+          updateDiagnostics();
+        } else {
+          // ICE candidate gathering completed
+          diagGathering.textContent = 'complete';
+        }
+      };
+
+      peerConnection.oniceconnectionstatechange = () => {
+        const state = peerConnection.iceConnectionState;
+        iceStateText.textContent = state.toUpperCase();
+        if (state === 'connected' || state === 'completed') {
+          connectionBadge.className = 'status-badge pairing';
+          connectionStatusText.textContent = 'Network linked, opening secure data channel...';
+        } else if (state === 'disconnected' || state === 'failed' || state === 'closed') {
+          if (!dataChannel || dataChannel.readyState !== 'open') {
+            setConnectedUI(false);
+          }
+        }
+      };
+
+      peerConnection.onsignalingstatechange = () => {
+        diagSignaling.textContent = peerConnection.signalingState;
+      };
+
+      return peerConnection;
+    }
+
+    function setupDataChannelEvents(channel) {
+      dataChannel = channel;
+      dataChannel.binaryType = 'arraybuffer';
+      // Low threshold for backpressure control
+      dataChannel.bufferedAmountLowThreshold = 256 * 1024;
+
+      dataChannel.onopen = () => {
+        dcStateText.textContent = 'OPEN';
+        setConnectedUI(true);
+        soundConnected();
+        showToast('Connected! 2-way file transfer active');
+        // Send initial ping to check RTT
+        sendPing();
+
+        // Synchronize shared catalogs
+        try {
+          dataChannel.send(JSON.stringify({ type: 'catalog-request' }));
+          if (mySharedFilesMap.size > 0) {
+            broadcastCatalog();
+          }
+        } catch (err) {
+          console.warn('Catalog sync init err:', err);
+        }
+      };
+
+      dataChannel.onclose = () => {
+        dcStateText.textContent = 'CLOSED';
+        setConnectedUI(false);
+        showToast('Connection closed');
+        peerCatalog = [];
+        renderPeerCatalog([]);
+      };
+
+      dataChannel.onerror = (err) => {
+        console.error('DataChannel error:', err);
+      };
+
+      dataChannel.onmessage = handleDataChannelMessage;
+    }
+
+    function updateDiagnostics() {
+      if (!peerConnection) return;
+      diagGathering.textContent = peerConnection.iceGatheringState || 'new';
+      diagSignaling.textContent = peerConnection.signalingState || 'stable';
+      diagCandidates.textContent = candidatesCount;
+      if (dataChannel) {
+        dcStateText.textContent = dataChannel.readyState.toUpperCase();
+      }
+    }
+
+    function setConnectedUI(connected) {
+      isConnected = connected;
+      if (connected) {
+        connectionBadge.className = 'status-badge connected';
+        connectionStatusText.textContent = 'Connected';
+        pairingWizard.style.display = 'none';
+        transferInterface.style.display = 'flex';
+      } else {
+        connectionBadge.className = 'status-badge disconnected';
+        connectionStatusText.textContent = 'Not connected';
+        pairingWizard.style.display = 'flex';
+        transferInterface.style.display = 'none';
+      }
+    }
+
+    // Helper: Wait for ICE gathering to complete before creating QR code
+    function waitForIceGathering(pc, maxWaitMs = 2500) {
+      return new Promise((resolve) => {
+        if (!pc || pc.iceGatheringState === 'complete') {
+          resolve();
+          return;
+        }
+        let timer = null;
+        const check = () => {
+          if (pc.iceGatheringState === 'complete') {
+            cleanup();
+            resolve();
+          }
+        };
+        const cleanup = () => {
+          if (timer) clearTimeout(timer);
+          try { pc.removeEventListener('icegatheringstatechange', check); } catch(e) {}
+        };
+        timer = setTimeout(() => {
+          cleanup();
+          resolve();
+        }, maxWaitMs);
+        pc.addEventListener('icegatheringstatechange', check);
+      });
+    }
+
+    /* --------------------------------------------------------------------------
+       Flow 1: Initiator (Device A)
+       -------------------------------------------------------------------------- */
+    async function createOfferFlow() {
+      try {
+        const pc = createPeerConnection();
+        const dc = pc.createDataChannel('p2p-drop', { ordered: true });
+        setupDataChannelEvents(dc);
+
+        connectionBadge.className = 'status-badge pairing';
+        connectionStatusText.textContent = 'Gathering connection routes...';
+
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+
+        // Wait for ICE candidates to populate into localDescription
+        await waitForIceGathering(pc, 2500);
+        await finalizeOfferDisplay();
+
+      } catch (err) {
+        console.error('Offer generation error:', err);
+        showToast('Error creating code: ' + err.message);
+      }
+    }
+
+    async function finalizeOfferDisplay() {
+      if (localSDP || !peerConnection) return;
+      localSDP = peerConnection.localDescription.sdp;
+      const sanitized = minifyAndAnonymizeSDP(localSDP);
+      const compressed = await compressSDP(sanitized);
+
+      const qrHolder = document.getElementById('qr-offer-holder');
+      QR.renderQR(qrHolder, compressed);
+
+      document.getElementById('offer-sdp-text').value = compressed;
+      document.getElementById('offer-qr-container').style.display = 'flex';
+
+      connectionBadge.className = 'status-badge pairing';
+      connectionStatusText.textContent = 'Waiting for other device';
+      showToast('QR code ready to scan');
+    }
+
+    async function applyAnswerSDP() {
+      const raw = document.getElementById('input-answer-sdp').value;
+      if (!raw.trim()) {
+        showToast('Please paste the response code');
+        return;
+      }
+      if (!peerConnection) {
+        showToast('Please click "Create QR code" first.');
+        return;
+      }
+      if (peerConnection.signalingState === 'stable') {
+        if (dataChannel && dataChannel.readyState === 'open') {
+          showToast('Already directly connected!');
+          return;
+        }
+        showToast('Session already active or expired. Click "Start over" to pair fresh.');
+        return;
+      }
+      if (peerConnection.signalingState !== 'have-local-offer') {
+        showToast('Cannot connect in state: ' + peerConnection.signalingState + '. Please click "Start over".');
+        return;
+      }
+      try {
+        const decompressed = await decompressSDP(raw);
+        await peerConnection.setRemoteDescription({
+          type: 'answer',
+          sdp: decompressed
+        });
+        connectionBadge.className = 'status-badge pairing';
+        connectionStatusText.textContent = 'Establishing secure direct link...';
+        showToast('Connecting to other device...');
+      } catch (e) {
+        console.error('Error applying answer:', e);
+        showToast('Invalid code: ' + e.message);
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       Flow 2: Joiner (Device B)
+       -------------------------------------------------------------------------- */
+    async function generateAnswerFromInput() {
+      const raw = document.getElementById('input-offer-sdp').value;
+      if (!raw.trim()) {
+        showToast('Please scan or paste the sender\'s code');
+        return;
+      }
+
+      try {
+        const decompressed = await decompressSDP(raw);
+        const pc = createPeerConnection();
+
+        pc.ondatachannel = (e) => {
+          setupDataChannelEvents(e.channel);
+        };
+
+        connectionBadge.className = 'status-badge pairing';
+        connectionStatusText.textContent = 'Preparing response...';
+
+        await pc.setRemoteDescription({
+          type: 'offer',
+          sdp: decompressed
+        });
+
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+
+        await waitForIceGathering(pc, 2500);
+        await finalizeAnswerDisplay();
+
+      } catch (err) {
+        console.error('Error creating answer:', err);
+        showToast('Error: ' + err.message);
+      }
+    }
+
+    async function finalizeAnswerDisplay() {
+      if (remoteSDP || !peerConnection) return;
+      remoteSDP = peerConnection.localDescription.sdp;
+      const sanitized = minifyAndAnonymizeSDP(remoteSDP);
+      const compressed = await compressSDP(sanitized);
+
+      const qrHolder = document.getElementById('qr-answer-holder');
+      QR.renderQR(qrHolder, compressed);
+
+      document.getElementById('answer-sdp-text').value = compressed;
+      document.getElementById('answer-qr-container').style.display = 'flex';
+
+      connectionBadge.className = 'status-badge pairing';
+      connectionStatusText.textContent = 'Response ready';
+      showToast('Response QR code created');
+    }
+
+    function resetConnection() {
+      transferCancelled = true;
+      isSending = false;
+      isReceiving = false;
+      if (currentActiveFile && currentActiveFile.streamManager) {
+        try { currentActiveFile.streamManager.cleanup(); } catch(e) {}
+      }
+      currentActiveFile = null;
+      if (activeTransferCard) activeTransferCard.style.display = 'none';
+
+      if (dataChannel) {
+        try { dataChannel.close(); } catch(e) {}
+      }
+      if (peerConnection) {
+        try { peerConnection.close(); } catch(e) {}
+      }
+      peerConnection = null;
+      dataChannel = null;
+      localSDP = '';
+      remoteSDP = '';
+      setConnectedUI(false);
+      document.getElementById('offer-qr-container').style.display = 'none';
+      document.getElementById('answer-qr-container').style.display = 'none';
+      document.getElementById('input-offer-sdp').value = '';
+      document.getElementById('input-answer-sdp').value = '';
+      showToast('Session reset');
+    }
+
+    function disconnectPeer() {
+      resetConnection();
+    }
+
+    /* --------------------------------------------------------------------------
+       Camera QR Scanner Modal (Native MediaDevices & BarcodeDetector)
+       -------------------------------------------------------------------------- */
+    async function openScannerModal(targetField) {
+      activeScannerTarget = targetField;
+      const modal = document.getElementById('scanner-modal');
+      const video = document.getElementById('scanner-video');
+      const statusText = document.getElementById('scanner-status');
+      modal.classList.add('open');
+
+      statusText.textContent = 'Requesting camera access...';
+
+      try {
+        const constraints = {
+          video: {
+            facingMode: currentCameraFacing,
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          }
+        };
+        scannerStream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = scannerStream;
+        await video.play();
+
+        statusText.textContent = 'Align QR code in frame...';
+        startScanningLoop(video);
+      } catch (err) {
+        console.error('Camera access error:', err);
+        statusText.textContent = 'Camera not available or blocked. Please paste code manually.';
+        showToast('Camera permission denied or unavailable');
+      }
+    }
+
+    function closeScannerModal() {
+      const modal = document.getElementById('scanner-modal');
+      modal.classList.remove('open');
+      if (scannerAnimFrame) {
+        cancelAnimationFrame(scannerAnimFrame);
+        scannerAnimFrame = null;
+      }
+      if (scannerStream) {
+        scannerStream.getTracks().forEach(t => t.stop());
+        scannerStream = null;
+      }
+    }
+
+    async function flipCamera() {
+      currentCameraFacing = currentCameraFacing === 'environment' ? 'user' : 'environment';
+      closeScannerModal();
+      openScannerModal(activeScannerTarget);
+    }
+
+    function startScanningLoop(video) {
+      if ('BarcodeDetector' in window) {
+        const detector = new BarcodeDetector({ formats: ['qr_code'] });
+        const scan = async () => {
+          if (!scannerStream) return;
+          if (video.readyState >= 2) {
+            try {
+              const codes = await detector.detect(video);
+              if (codes && codes.length > 0) {
+                const result = codes[0].rawValue;
+                handleScanResult(result);
+                return;
+              }
+            } catch (e) {}
+          }
+          scannerAnimFrame = requestAnimationFrame(scan);
+        };
+        scannerAnimFrame = requestAnimationFrame(scan);
+      } else {
+        // BarcodeDetector not supported natively
+        document.getElementById('scanner-status').innerHTML =
+          'Camera QR scanner is not supported in this browser.<br>You can copy and paste the code directly instead.';
+      }
+    }
+
+    function handleScanResult(code) {
+      closeScannerModal();
+      showToast('QR code scanned');
+      if (activeScannerTarget === 'offer') {
+        document.getElementById('input-offer-sdp').value = code;
+        generateAnswerFromInput();
+      } else if (activeScannerTarget === 'answer') {
+        document.getElementById('input-answer-sdp').value = code;
+        applyAnswerSDP();
+      }
+    }
+
+    /* --------------------------------------------------------------------------
+       FTP / Shared File Library, Queueing & File Streaming
+       -------------------------------------------------------------------------- */
+    function getFileIcon(filename, mime) {
+      const ext = ((filename || '').split('.').pop() || '').toLowerCase();
+      if (['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg', 'bmp', 'ico'].includes(ext) || (mime && mime.startsWith('image/'))) return '🖼️';
+      if (['mp4', 'mkv', 'mov', 'webm', 'avi', 'm4v'].includes(ext) || (mime && mime.startsWith('video/'))) return '🎬';
+      if (['mp3', 'wav', 'ogg', 'm4a', 'flac', 'aac'].includes(ext) || (mime && mime.startsWith('audio/'))) return '🎵';
+      if (['zip', 'tar', 'gz', 'rar', '7z', 'bz2', 'xz'].includes(ext)) return '📦';
+      if (['pdf'].includes(ext) || (mime && mime === 'application/pdf')) return '📄';
+      if (['doc', 'docx', 'txt', 'rtf', 'md', 'epub', 'odt'].includes(ext)) return '📝';
+      if (['js', 'ts', 'html', 'css', 'json', 'py', 'java', 'c', 'cpp', 'rs', 'go', 'sh', 'php'].includes(ext)) return '💻';
+      return '📁';
+    }
+
+    function switchTransferMode(mode) {
+      currentTransferMode = mode;
+      if (tabModeDirect) tabModeDirect.classList.toggle('active', mode === 'direct');
+      if (tabModeBrowse) tabModeBrowse.classList.toggle('active', mode === 'browse');
+      if (tabModeShare) tabModeShare.classList.toggle('active', mode === 'share');
+
+      if (viewModeDirect) viewModeDirect.style.display = (mode === 'direct' ? 'flex' : 'none');
+      if (viewModeBrowse) viewModeBrowse.style.display = (mode === 'browse' ? 'flex' : 'none');
+      if (viewModeShare) viewModeShare.style.display = (mode === 'share' ? 'flex' : 'none');
+    }
+
+    function broadcastCatalog() {
+      if (!dataChannel || dataChannel.readyState !== 'open') return;
+      const list = Array.from(mySharedFilesMap.values()).map(item => ({
+        id: item.id,
+        name: item.name,
+        size: item.size,
+        type: item.type
+      }));
+      try {
+        dataChannel.send(JSON.stringify({
+          type: 'catalog',
+          files: list
+        }));
+      } catch (err) {
+        console.error('Failed to broadcast catalog:', err);
+      }
+    }
+
+    function renderMySharedFiles() {
+      const count = mySharedFilesMap.size;
+      if (mySharedCountEl) mySharedCountEl.textContent = count;
+      if (badgeMyCountEl) badgeMyCountEl.textContent = count;
+
+      if (!mySharedFilesContainer) return;
+      if (count === 0) {
+        if (myFilesEmptyMsg) myFilesEmptyMsg.style.display = 'block';
+        mySharedFilesContainer.innerHTML = '';
+        return;
+      }
+      if (myFilesEmptyMsg) myFilesEmptyMsg.style.display = 'none';
+      mySharedFilesContainer.innerHTML = '';
+
+      mySharedFilesMap.forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'file-item';
+        const icon = getFileIcon(item.name, item.type);
+        row.innerHTML = `
+          <div class="file-details">
+            <div class="file-icon-box">${icon}</div>
+            <div class="file-info-text">
+              <span class="file-name-text" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</span>
+              <span class="file-size-text">${formatBytes(item.size)} • Hosted locally</span>
+            </div>
+          </div>
+          <div class="file-actions" style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" class="btn btn-sm btn-ghost" title="Remove file" onclick="window.removeMySharedFile && window.removeMySharedFile('${item.id}')">
+              ✕
+            </button>
+          </div>
+        `;
+        mySharedFilesContainer.appendChild(row);
+      });
+    }
+
+    function removeMySharedFile(id) {
+      if (mySharedFilesMap.has(id)) {
+        mySharedFilesMap.delete(id);
+        renderMySharedFiles();
+        broadcastCatalog();
+        showToast('File removed from shared catalog');
+      }
+    }
+
+    function clearMySharedFiles() {
+      if (mySharedFilesMap.size === 0) return;
+      mySharedFilesMap.clear();
+      renderMySharedFiles();
+      broadcastCatalog();
+      showToast('All shared files removed');
+    }
+
+    function renderPeerCatalog(catalog) {
+      const files = catalog || peerCatalog || [];
+      const count = files.length;
+      if (peerSharedCountEl) peerSharedCountEl.textContent = count;
+      if (badgePeerCountEl) badgePeerCountEl.textContent = count;
+      if (btnDownloadAllPeer) btnDownloadAllPeer.disabled = (count === 0);
+
+      if (!peerFilesContainer) return;
+      if (count === 0) {
+        if (peerFilesEmptyMsg) peerFilesEmptyMsg.style.display = 'block';
+        peerFilesContainer.innerHTML = '';
+        return;
+      }
+      if (peerFilesEmptyMsg) peerFilesEmptyMsg.style.display = 'none';
+      peerFilesContainer.innerHTML = '';
+
+      files.forEach((file) => {
+        const row = document.createElement('div');
+        row.className = 'file-item';
+        const icon = getFileIcon(file.name, file.type);
+        row.innerHTML = `
+          <div class="file-details">
+            <div class="file-icon-box">${icon}</div>
+            <div class="file-info-text">
+              <span class="file-name-text" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</span>
+              <span class="file-size-text">${formatBytes(file.size)}</span>
+            </div>
+          </div>
+          <div class="file-actions" style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" class="btn btn-sm btn-primary" onclick="window.requestPeerFile && window.requestPeerFile('${file.id}')">
+              ⬇ Download
+            </button>
+          </div>
+        `;
+        peerFilesContainer.appendChild(row);
+      });
+    }
+
+    function requestPeerFile(id) {
+      if (!dataChannel || dataChannel.readyState !== 'open') {
+        showToast('Not connected');
+        return;
+      }
+      dataChannel.send(JSON.stringify({
+        type: 'request-file',
+        id: id
+      }));
+      const found = peerCatalog.find(f => f.id === id);
+      showToast(`Requested "${found ? found.name : 'file'}"...`);
+    }
+
+    function downloadAllPeerFiles() {
+      if (!dataChannel || dataChannel.readyState !== 'open') {
+        showToast('Not connected');
+        return;
+      }
+      if (peerCatalog.length === 0) {
+        showToast('No files available to download');
+        return;
+      }
+      dataChannel.send(JSON.stringify({ type: 'request-all' }));
+      showToast(`Requested download of all ${peerCatalog.length} files...`);
+    }
+
+    function refreshPeerCatalog() {
+      if (!dataChannel || dataChannel.readyState !== 'open') {
+        showToast('Not connected');
+        return;
+      }
+      dataChannel.send(JSON.stringify({ type: 'catalog-request' }));
+      showToast('Refreshing peer catalog...');
+    }
+
+    function enqueueOutgoingFile(file) {
+      outgoingQueue.push(file);
+      if (!isSending && !isProcessingQueue) {
+        processOutgoingQueue();
+      }
+    }
+
+    async function processOutgoingQueue() {
+      if (isProcessingQueue) return;
+      isProcessingQueue = true;
+      while (outgoingQueue.length > 0 && !transferCancelled) {
+        const file = outgoingQueue.shift();
+        await streamSingleFile(file);
+      }
+      isProcessingQueue = false;
+    }
+
+    async function sendFiles(files) {
+      if (!files || files.length === 0) return;
+      if (!dataChannel || dataChannel.readyState !== 'open') {
+        showToast('Not connected');
+        return;
+      }
+      for (let i = 0; i < files.length; i++) {
+        enqueueOutgoingFile(files[i]);
+      }
+    }
+
+    async function streamSingleFile(file) {
+      isSending = true;
+      transferCancelled = false;
+
+      let processedFile = file;
+
+      // 1. Stealth Metadata Stripping
+      if (document.getElementById('opt-strip-metadata')?.checked) {
+        if (file.type === 'image/jpeg' || file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')) {
+          try {
+            const rawBuf = await file.arrayBuffer();
+            processedFile = stripJpegExif(rawBuf);
+          } catch(e) {
+            console.warn('Metadata purge fallback:', e);
+          }
+        }
+      }
+
+      // 2. Blind Transfer: Filename & Identity Obfuscation
+      let broadcastName = file.name;
+      if (document.getElementById('opt-blind-transfer')?.checked) {
+        const ext = file.name.includes('.') ? file.name.split('.').pop() : 'bin';
+        const anonToken = Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0');
+        broadcastName = `anon_${anonToken}.${ext}`;
+      }
+
+      const totalChunks = Math.ceil(processedFile.size / CHUNK_SIZE);
+      const fileId = Math.floor(Math.random() * 0x7FFFFFFE) + 1;
+
+      // UI Setup
+      activeTransferCard.style.display = 'flex';
+      transferDirectionBadge.textContent = 'Sending';
+      transferFileName.textContent = broadcastName + ' (' + formatBytes(processedFile.size) + ')';
+      transferProgressFill.style.width = '0%';
+      transferProgressAscii.textContent = '[░░░░░░░░░░░░░░░░░░░░] 0%';
+      transferChunkStat.textContent = `0 / ${totalChunks} chunks`;
+      statStorageMode.textContent = 'ZERO-COPY PREFETCH';
+
+      // Send Header Metadata Packet
+      dataChannel.send(JSON.stringify({
+        type: 'file-start',
+        id: fileId,
+        name: broadcastName,
+        size: processedFile.size,
+        mime: processedFile.type || 'application/octet-stream',
+        totalChunks: totalChunks
+      }));
+
+      // High-throughput Sliding Window Pipelining with Double/Triple Buffering
+      const HIGH_WATER_MARK = 2 * 1024 * 1024; // 2MB saturation ceiling
+      const LOW_WATER_MARK = 512 * 1024; // 512KB drain threshold
+      dataChannel.bufferedAmountLowThreshold = LOW_WATER_MARK;
+
+      const speedFilter = new SpeedFilter(0.28);
+      speedFilter.reset();
+
+      let offset = 0;
+      let chunkIndex = 0;
+      let wholeFileCrc = 0xFFFFFFFF;
+
+      // Asynchronous Read-Ahead Prefetch Queue (capacity 3)
+      const PREFETCH_MAX = 3;
+      const prefetchQueue = [];
+      let readOffset = 0;
+      let readIndex = 0;
+
+      function prefetchNext() {
+        if (readOffset >= processedFile.size) return;
+        const sliceStart = readOffset;
+        const sliceEnd = Math.min(processedFile.size, readOffset + CHUNK_SIZE);
+        readOffset = sliceEnd;
+        const cIdx = readIndex++;
+        const slice = processedFile.slice(sliceStart, sliceEnd);
+        const p = slice.arrayBuffer().then(buf => ({ idx: cIdx, buf }));
+        prefetchQueue.push(p);
+      }
+
+      // Prime the pipeline with initial prefetched slices
+      for (let p = 0; p < PREFETCH_MAX && readOffset < processedFile.size; p++) {
+        prefetchNext();
+      }
+
+      while (chunkIndex < totalChunks) {
+        if (transferCancelled) {
+          dataChannel.send(JSON.stringify({ type: 'file-cancel', id: fileId }));
+          showToast('Transfer cancelled');
+          break;
+        }
+
+        // Pipelined Backpressure Flow Control
+        if (dataChannel.bufferedAmount >= HIGH_WATER_MARK) {
+          statBuffer.textContent = `${formatBytes(dataChannel.bufferedAmount)} (WAITING)`;
+          await new Promise((resolve) => {
+            const onLow = () => {
+              dataChannel.removeEventListener('bufferedamountlow', onLow);
+              resolve();
+            };
+            dataChannel.addEventListener('bufferedamountlow', onLow);
+          });
+        }
+        statBuffer.textContent = `${formatBytes(dataChannel.bufferedAmount)} (SATURATED 100%)`;
+
+        // Refill prefetch queue asynchronously
+        if (readOffset < processedFile.size && prefetchQueue.length < PREFETCH_MAX) {
+          prefetchNext();
+        }
+
+        // Pop prefetched chunk without disk read latency
+        const prefetched = await prefetchQueue.shift();
+        const arrayBuf = prefetched.buf;
+        const chunkBytes = new Uint8Array(arrayBuf);
+
+        // Hardware-style bitwise CRC32 calculation
+        const chunkCrc = CRC32.calculate(chunkBytes);
+        wholeFileCrc = CRC32.updateSeed(chunkBytes, wholeFileCrc);
+
+        // Pure Binary Packet Framing (19-Byte Header: 'P2' + OP_CHUNK + fileId + chunkIdx + totalChunks + CRC32)
+        const frame = new Uint8Array(19 + chunkBytes.byteLength);
+        frame[0] = 0x50; // 'P'
+        frame[1] = 0x32; // '2'
+        frame[2] = 0x01; // OP_CHUNK
+        const dv = new DataView(frame.buffer);
+        dv.setUint32(3, fileId, false);
+        dv.setUint32(7, chunkIndex, false);
+        dv.setUint32(11, totalChunks, false);
+        dv.setUint32(15, chunkCrc, false);
+        frame.set(chunkBytes, 19);
+
+        // Send directly into saturated SCTP socket buffer
+        dataChannel.send(frame.buffer);
+
+        offset += chunkBytes.byteLength;
+        chunkIndex++;
+
+        // Exponential Moving Average speed calculation
+        const speedEma = speedFilter.update(offset);
+        const pct = Math.min(100, Math.round((offset / processedFile.size) * 100));
+        const remainingSec = speedEma > 0 ? (processedFile.size - offset) / speedEma : 0;
+
+        renderProgressUI(pct, offset, processedFile.size, chunkIndex, totalChunks, speedEma, remainingSec, chunkCrc, 'SLIDING WINDOW (2MB)');
+      }
+
+      if (!transferCancelled) {
+        const finalChecksum = (wholeFileCrc ^ 0xFFFFFFFF) >>> 0;
+        dataChannel.send(JSON.stringify({
+          type: 'file-end',
+          id: fileId,
+          crc32: finalChecksum
+        }));
+        soundComplete();
+        showToast(`Sent: ${broadcastName}`);
+      }
+
+      // Memory Zeroize & Anti-Forensic cleanup
+      if (document.getElementById('opt-zeroize-memory')?.checked) {
+        prefetchQueue.length = 0;
+      }
+
+      setTimeout(() => {
+        if (!isReceiving) activeTransferCard.style.display = 'none';
+        isSending = false;
+      }, 1000);
+    }
+
+    function cancelActiveTransfer() {
+      transferCancelled = true;
+      if (dataChannel && dataChannel.readyState === 'open') {
+        dataChannel.send(JSON.stringify({ type: 'file-cancel' }));
+      }
+      activeTransferCard.style.display = 'none';
+      isSending = false;
+      showToast('Transfer cancelled');
+    }
+
+    /* --------------------------------------------------------------------------
+       DataChannel Message Handler (Multiplexed JSON & Fast Binary ArrayBuffers)
+       -------------------------------------------------------------------------- */
+    async function handleDataChannelMessage(e) {
+      // 1. Text / JSON Control Messages
+      if (typeof e.data === 'string') {
+        try {
+          const msg = JSON.parse(e.data);
+
+          if (msg.type === 'file-start') {
+            isReceiving = true;
+            transferCancelled = false;
+
+            const speedFilter = new SpeedFilter(0.28);
+            speedFilter.reset();
+
+            // Initialize Zero-RAM OPFS stream or memory buffer
+            const streamManager = await createOpfsStream(msg.id, msg.size);
+
+            currentActiveFile = {
+              id: msg.id,
+              name: msg.name,
+              size: msg.size,
+              mime: msg.mime,
+              totalChunks: msg.totalChunks,
+              streamManager: streamManager,
+              receivedBytes: 0,
+              receivedChunks: 0,
+              speedFilter: speedFilter,
+              lastChunkCrc: 0
+            };
+
+            activeTransferCard.style.display = 'flex';
+            transferDirectionBadge.textContent = 'Receiving';
+            transferFileName.textContent = msg.name + ' (' + formatBytes(msg.size) + ')';
+            renderProgressUI(0, 0, msg.size, 0, msg.totalChunks, 0, 0, 0, streamManager.isOpfs ? 'OPFS DISK STREAM' : 'CHUNKS BUFFER');
+
+          } else if (msg.type === 'file-end') {
+            if (currentActiveFile && currentActiveFile.id === msg.id) {
+              currentActiveFile.expectedWholeCrc = msg.crc32;
+              await finishReceivingFile(currentActiveFile);
+              currentActiveFile = null;
+              isReceiving = false;
+            }
+
+          } else if (msg.type === 'file-cancel') {
+            showToast('Transfer cancelled by other device');
+            if (currentActiveFile && currentActiveFile.streamManager) {
+              currentActiveFile.streamManager.cleanup();
+            }
+            activeTransferCard.style.display = 'none';
+            currentActiveFile = null;
+            isReceiving = false;
+
+          } else if (msg.type === 'catalog') {
+            peerCatalog = msg.files || [];
+            renderPeerCatalog(peerCatalog);
+            if (peerCatalog.length > 0) {
+              showToast(`Peer is sharing ${peerCatalog.length} file(s)`);
+            }
+
+          } else if (msg.type === 'catalog-request') {
+            broadcastCatalog();
+
+          } else if (msg.type === 'request-file') {
+            const item = mySharedFilesMap.get(msg.id);
+            if (item && item.file) {
+              showToast(`Peer requested: ${item.name}`);
+              enqueueOutgoingFile(item.file);
+            } else {
+              console.warn('Requested file not found in shared catalog:', msg.id);
+            }
+
+          } else if (msg.type === 'request-all') {
+            if (mySharedFilesMap.size > 0) {
+              showToast(`Peer requested all ${mySharedFilesMap.size} shared file(s)`);
+              for (const item of mySharedFilesMap.values()) {
+                enqueueOutgoingFile(item.file);
+              }
+            }
+
+          } else if (msg.type === 'chat') {
+            appendChatMessage('Peer', msg.text);
+            soundPing();
+
+          } else if (msg.type === 'ping') {
+            dataChannel.send(JSON.stringify({ type: 'pong', sentAt: msg.sentAt }));
+
+          } else if (msg.type === 'pong') {
+            const rtt = Math.round(performance.now() - msg.sentAt);
+            latencyMeter.textContent = `RTT: ${rtt}ms`;
+            showToast(`Connection test: ${rtt}ms`);
+            soundPing();
+          }
+
+        } catch (err) {
+          console.error('Invalid message:', err);
+        }
+
+      // 2. Binary Packets (Pure Binary Framing with CRC32 Verification)
+      } else if (e.data instanceof ArrayBuffer) {
+        if (!currentActiveFile) return;
+
+        const buf = e.data;
+        if (buf.byteLength < 19) return;
+        const view = new DataView(buf);
+
+        // Check Magic bytes 'P2' (0x50, 0x32)
+        if (view.getUint8(0) === 0x50 && view.getUint8(1) === 0x32 && view.getUint8(2) === 0x01) {
+          const fileId = view.getUint32(3, false);
+          const chunkIndex = view.getUint32(7, false);
+          const totalChunks = view.getUint32(11, false);
+          const expectedCrc = view.getUint32(15, false);
+
+          const payload = buf.slice(19);
+          const payloadBytes = new Uint8Array(payload);
+
+          // Bitwise IEEE 802.3 CRC32 Validation
+          const actualCrc = CRC32.calculate(payloadBytes);
+          if (actualCrc !== expectedCrc) {
+            console.error(`CRC32 mismatch on chunk ${chunkIndex}! Expected: ${expectedCrc}, Got: ${actualCrc}`);
+            return;
+          }
+
+          // Write chunk directly into stream/memory pipeline
+          if (currentActiveFile.streamManager) {
+            if (currentActiveFile.streamManager.isOpfs) {
+              currentActiveFile.streamManager.writeChunk(payloadBytes);
+            } else {
+              currentActiveFile.streamManager.writeChunk(payload, chunkIndex);
+            }
+          }
+
+          currentActiveFile.receivedChunks++;
+          currentActiveFile.receivedBytes += payloadBytes.byteLength;
+          currentActiveFile.lastChunkCrc = actualCrc;
+
+          // Smooth EMA speed calculation
+          const speedEma = currentActiveFile.speedFilter.update(currentActiveFile.receivedBytes);
+          const pct = Math.min(100, Math.round((currentActiveFile.receivedBytes / currentActiveFile.size) * 100));
+          const remainingSec = speedEma > 0 ? (currentActiveFile.size - currentActiveFile.receivedBytes) / speedEma : 0;
+
+          renderProgressUI(
+            pct,
+            currentActiveFile.receivedBytes,
+            currentActiveFile.size,
+            currentActiveFile.receivedChunks,
+            currentActiveFile.totalChunks,
+            speedEma,
+            remainingSec,
+            actualCrc,
+            currentActiveFile.streamManager.isOpfs ? 'OPFS (0 RAM LEAK)' : 'TYPED ARRAYS'
+          );
+        }
+      }
+    }
+
+    function renderProgressUI(pct, bytes, totalBytes, chunkIdx, totalChunks, speedBytesPerSec, remainingSec, crc, storageMode) {
+      transferProgressFill.style.width = pct + '%';
+
+      // ASCII progress bar
+      const filledCount = Math.floor(pct / 5);
+      const emptyCount = 20 - filledCount;
+      const bar = '█'.repeat(filledCount) + '░'.repeat(emptyCount);
+      transferProgressAscii.textContent = `[${bar}] ${pct}%`;
+
+      transferChunkStat.textContent = `${chunkIdx.toLocaleString()} / ${totalChunks.toLocaleString()} chunks`;
+      statSpeed.textContent = (speedBytesPerSec / (1024 * 1024)).toFixed(1) + ' MB/s';
+      statBytes.textContent = `${formatBytes(bytes)} / ${formatBytes(totalBytes)}`;
+      statEta.textContent = formatDuration(remainingSec);
+      if (crc) {
+        statCrc.textContent = CRC32.hex(crc) + ' (VALID)';
+      }
+      if (storageMode) {
+        statStorageMode.textContent = storageMode;
+      }
+    }
+
+    async function finishReceivingFile(fileObj) {
+      // Assemble final Blob from OPFS file handle or chunks array
+      let blob = null;
+      if (fileObj.streamManager) {
+        blob = await fileObj.streamManager.finalize(fileObj.mime);
+      } else {
+        blob = new Blob(fileObj.chunks, { type: fileObj.mime });
+      }
+
+      const downloadUrl = URL.createObjectURL(blob);
+      const fileRecord = {
+        id: fileObj.id,
+        name: fileObj.name,
+        size: fileObj.size,
+        mime: fileObj.mime,
+        url: downloadUrl,
+        blob: blob,
+        streamManager: fileObj.streamManager,
+        crc32: fileObj.expectedWholeCrc || fileObj.lastChunkCrc,
+        receivedAt: new Date()
+      };
+
+      receivedFiles.unshift(fileRecord);
+      renderReceivedFilesList();
+
+      soundComplete();
+      showToast(`Received: ${fileObj.name}`);
+
+      // Auto download if enabled
+      if (autoDownloadToggle.checked) {
+        triggerDownload(downloadUrl, fileObj.name, fileRecord.id);
+      }
+
+      setTimeout(() => {
+        if (!isSending) activeTransferCard.style.display = 'none';
+      }, 1000);
+    }
+
+    function triggerDownload(url, filename, fileId) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      // Burn-After-Download Anti-Forensic Execution
+      if (document.getElementById('opt-burn-download')?.checked && fileId) {
+        setTimeout(() => {
+          purgeFileFromRam(fileId);
+          showToast('File removed from memory');
+        }, 1200);
+      }
+    }
+
+    function purgeFileFromRam(fileId) {
+      const idx = receivedFiles.findIndex(f => f.id === fileId || String(f.id) === String(fileId));
+      if (idx !== -1) {
+        const file = receivedFiles[idx];
+        if (file.url) {
+          try { URL.revokeObjectURL(file.url); } catch(e) {}
+        }
+        if (file.streamManager) {
+          file.streamManager.cleanup();
+        }
+        receivedFiles.splice(idx, 1);
+        renderReceivedFilesList();
+      }
+    }
+
+    function renderReceivedFilesList() {
+      receivedCountEl.textContent = receivedFiles.length;
+      if (receivedFiles.length === 0) {
+        emptyFilesMsg.style.display = 'block';
+        receivedFilesContainer.innerHTML = '';
+        return;
+      }
+      emptyFilesMsg.style.display = 'none';
+      receivedFilesContainer.innerHTML = '';
+
+      receivedFiles.forEach((file) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+
+        item.innerHTML = `
+          <div class="file-details">
+            <div class="file-icon-box">⬇</div>
+            <div class="file-info-text">
+              <span class="file-name-text" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</span>
+              <span class="file-size-text">${formatBytes(file.size)} • ${file.receivedAt.toLocaleTimeString()} • CRC: ${CRC32.hex(file.crc32 || 0)}</span>
+            </div>
+          </div>
+          <div class="file-actions" style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" class="btn btn-sm btn-primary btn-dl">
+              Save
+            </button>
+            <button type="button" class="btn btn-sm btn-danger btn-purge" title="Remove file from memory">
+              Delete
+            </button>
+          </div>
+        `;
+
+        const dlBtn = item.querySelector('.btn-dl');
+        if (dlBtn) {
+          dlBtn.addEventListener('click', () => triggerDownload(file.url, file.name, file.id));
+        }
+        const purgeBtn = item.querySelector('.btn-purge');
+        if (purgeBtn) {
+          purgeBtn.addEventListener('click', () => purgeFileFromRam(file.id));
+        }
+
+        receivedFilesContainer.appendChild(item);
+      });
+    }
+
+    /* --------------------------------------------------------------------------
+       Instant Peer Messenger & Ping
+       -------------------------------------------------------------------------- */
+    function handleSendChat(e) {
+      e.preventDefault();
+      const text = chatInput.value.trim();
+      if (!text) return;
+      if (!dataChannel || dataChannel.readyState !== 'open') {
+        showToast('DATA CHANNEL NOT OPEN');
+        return;
+      }
+
+      dataChannel.send(JSON.stringify({ type: 'chat', text: text }));
+      appendChatMessage('You', text);
+      chatInput.value = '';
+    }
+
+    function appendChatMessage(sender, msg) {
+      const line = document.createElement('div');
+      line.className = 'chat-msg';
+      line.innerHTML = `<span class="chat-sender">${sender}:</span> <span>${escapeHtml(msg)}</span>`;
+      chatLog.appendChild(line);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    function sendPing() {
+      if (!dataChannel || dataChannel.readyState !== 'open') return;
+      dataChannel.send(JSON.stringify({ type: 'ping', sentAt: performance.now() }));
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    /* --------------------------------------------------------------------------
+       Drag and Drop & File Selection Event Listeners
+       -------------------------------------------------------------------------- */
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      sendFiles(e.target.files);
+      fileInput.value = '';
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        sendFiles(e.dataTransfer.files);
+      }
+    });
+
+    // Window global drag prevent
+    window.addEventListener('dragover', (e) => e.preventDefault());
+    window.addEventListener('drop', (e) => e.preventDefault());
+
+    // Share Library input listeners
+    shareFileInput?.addEventListener('change', (e) => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const id = 'sh_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        mySharedFilesMap.set(id, { id, file, name: file.name, size: file.size, type: file.type });
+      }
+      renderMySharedFiles();
+      broadcastCatalog();
+      showToast(`Added ${files.length} file(s) to share library`);
+      e.target.value = '';
+    });
+
+    shareFolderInput?.addEventListener('change', (e) => {
+      const files = e.target.files;
+      if (!files || files.length === 0) return;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const id = 'sh_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        const relativeName = file.webkitRelativePath || file.name;
+        mySharedFilesMap.set(id, { id, file, name: relativeName, size: file.size, type: file.type });
+      }
+      renderMySharedFiles();
+      broadcastCatalog();
+      showToast(`Added folder (${files.length} files) to share library`);
+      e.target.value = '';
+    });
+
+    // Button event bindings
+    document.getElementById('btn-create-offer')?.addEventListener('click', createOfferFlow);
+    document.getElementById('btn-reset-connection')?.addEventListener('click', resetConnection);
+    document.getElementById('btn-open-settings')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (typeof window.openSettingsModal === 'function') {
+        window.openSettingsModal();
+      } else if (typeof window.toggleSettingsModal === 'function') {
+        window.toggleSettingsModal(true);
+      }
+    });
+    document.getElementById('btn-close-settings')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (typeof window.closeSettingsModal === 'function') {
+        window.closeSettingsModal();
+      } else if (typeof window.toggleSettingsModal === 'function') {
+        window.toggleSettingsModal(false);
+      }
+    });
+
+    // Global method exposure
+    window.openSettingsModal = openSettingsModal;
+    window.closeSettingsModal = closeSettingsModal;
+    window.toggleSettingsModal = toggleSettingsModal;
+    window.toggleDiagnostics = toggleDiagnostics;
+    window.toggleRawBox = toggleRawBox;
+    window.switchRole = switchRole;
+    window.pasteFromClipboard = pasteFromClipboard;
+    window.applyAnswerSDP = applyAnswerSDP;
+    window.generateAnswerFromInput = generateAnswerFromInput;
+    window.openScannerModal = openScannerModal;
+    window.closeScannerModal = closeScannerModal;
+    window.flipCamera = flipCamera;
+    window.disconnectPeer = disconnectPeer;
+    window.cancelActiveTransfer = cancelActiveTransfer;
+    window.sendPing = sendPing;
+    window.resetConnection = resetConnection;
+
+    // FTP / Shared Library Methods
+    window.switchTransferMode = switchTransferMode;
+    window.switchTransferModeApp = switchTransferMode;
+    window.refreshPeerCatalog = refreshPeerCatalog;
+    window.refreshPeerCatalogApp = refreshPeerCatalog;
+    window.downloadAllPeerFiles = downloadAllPeerFiles;
+    window.downloadAllPeerFilesApp = downloadAllPeerFiles;
+    window.requestPeerFile = requestPeerFile;
+    window.requestPeerFileApp = requestPeerFile;
+    window.clearMySharedFiles = clearMySharedFiles;
+    window.clearMySharedFilesApp = clearMySharedFiles;
+    window.removeMySharedFile = removeMySharedFile;
+    window.removeMySharedFileApp = removeMySharedFile;
+
+    document.getElementById('btn-copy-offer')?.addEventListener('click', () => {
+      const text = document.getElementById('offer-sdp-text').value;
+      navigator.clipboard.writeText(text).then(() => showToast('OFFER SDP COPIED!'));
+    });
+
+    document.getElementById('btn-copy-answer')?.addEventListener('click', () => {
+      const text = document.getElementById('answer-sdp-text').value;
+      navigator.clipboard.writeText(text).then(() => showToast('RETURN SDP COPIED!'));
+    });
+
+    // Keyboard navigation (Escape to close modals)
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const settingsModal = document.getElementById('settings-modal');
+        if (settingsModal && (settingsModal.classList.contains('open') || settingsModal.style.display === 'flex')) {
+          if (typeof window.closeSettingsModal === 'function') {
+            window.closeSettingsModal();
+          } else if (typeof window.toggleSettingsModal === 'function') {
+            window.toggleSettingsModal(false);
+          }
+        }
+        const scannerModal = document.getElementById('scanner-modal');
+        if (scannerModal && scannerModal.classList.contains('open')) {
+          if (typeof window.closeScannerModal === 'function') {
+            window.closeScannerModal();
+          } else if (typeof closeScannerModal === 'function') {
+            closeScannerModal();
+          }
+        }
+      }
+    });
+
+    /* --------------------------------------------------------------------------
+       Offline PWA Service Worker (Inline Data URI Registration & Cache Fallback)
+       -------------------------------------------------------------------------- */
+    if ('serviceWorker' in navigator) {
+      try {
+        const swScript = `
+          const CACHE = 'p2p-drop-offline-v2';
+          self.addEventListener('install', (e) => {
+            self.skipWaiting();
+          });
+          self.addEventListener('activate', (e) => {
+            e.waitUntil(
+              caches.keys().then((keys) =>
+                Promise.all(keys.map((k) => k !== CACHE ? caches.delete(k) : Promise.resolve()))
+              ).then(() => self.clients.claim())
+            );
+          });
+          self.addEventListener('fetch', (e) => {
+            e.respondWith(
+              fetch(e.request)
+                .then((res) => {
+                  if (res && res.status === 200 && e.request.method === 'GET') {
+                    const clone = res.clone();
+                    caches.open(CACHE).then((c) => c.put(e.request, clone));
+                  }
+                  return res;
+                })
+                .catch(() => caches.match(e.request).then((r) => r || caches.match('/index.html')))
+            );
+          });
+        `;
+        const blob = new Blob([swScript], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).catch((err) => {
+          navigator.serviceWorker.register('./sw.js').catch(() => {});
+        });
+      } catch (err) {}
+    }
+  </script>
+</body>
+</html>
